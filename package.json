@@ -12,7 +12,8 @@
     "README.md"
   ],
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "build:docs": "typedoc --options typedoc.config.js"
   },
   "repository": {
     "type": "git",
