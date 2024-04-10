@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "include": [
+    "src/**/*.ts",
+    "types/**/*.ts"
+  ],
+  "exclude": [
+    "dist/**/*",
+    "docs/**/*"
+  ],
+  "compilerOptions": {
+    "strict": true,
+    "alwaysStrict": true,
+    "removeComments": false,
+    "skipLibCheck": true,
+    "sourceMap": false,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "module": "nodenext",
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "lib": ["es2022"],
+    "typeRoots": [
+      "node_modules/@types",
+      "types"
+    ],
+    "target": "es6",
+    "allowUnreachableCode": false,
+    "noImplicitAny": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "listEmittedFiles": true
+  }
+}

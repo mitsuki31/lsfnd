@@ -1,0 +1,37 @@
+{
+  "name": "lsfnd",
+  "version": "0.1.0",
+  "description": "Easy list files and directories with regex filter support",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "private": true,
+  "files": [
+    "build/",
+    "types/",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mitsuki31/lsfnd.git"
+  },
+  "author": "Ryuu Mitsuki <dhefam31@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mitsuki31/lsfnd/issues"
+  },
+  "homepage": "https://github.com/mitsuki31/lsfnd#readme",
+  "devDependencies": {
+    "@types/node": "^20.12.4",
+    "esbuild": "^0.20.2",
+    "ts-node": "~10.9.2",
+    "typedoc-material-theme": "^1.0.2",
+    "typescript": "~5.4.3"
+  },
+  "peerDependencies": {
+    "typedoc": "^0.25.12"
+  }
+}
