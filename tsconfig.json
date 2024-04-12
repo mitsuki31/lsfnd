@@ -16,14 +16,10 @@
     "sourceMap": false,
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "module": "nodenext",
+    "module": "node16",
     "rootDir": "./src",
     "outDir": "./dist",
     "lib": ["es2022"],
-    "typeRoots": [
-      "node_modules/@types",
-      "types"
-    ],
     "target": "es6",
     "allowUnreachableCode": false,
     "noImplicitAny": true,

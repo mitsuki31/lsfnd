@@ -1,11 +1,11 @@
 /**
- * @file
  * A module that offers some functions to read and list files and/or directories
  * in a specified directory with support filtering using regular expression pattern.
  *
  * Copyright (c) 2024 Ryuu Mitsuki.
  * Licensed under the MIT license.
  *
+ * @module  lsfnd
  * @author  Ryuu Mitsuki (https://github.com/mitsuki31)
  * @since   0.1.0
  * @license MIT
@@ -14,6 +14,13 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { isRegExp } from 'node:util';
+import type {
+  LsEntries,
+  LsResult,
+  LsOptions,
+  LsTypesKeys,
+  LsTypesValues
+} from '../types';
 
 /**
  * This enumeration defines the different types of listings supported by
@@ -27,14 +34,26 @@ import { isRegExp } from 'node:util';
 export enum lsTypes {
   /**
    * This option lists both regular files and directories in the output.
+   * You can also use other number types for alias, like:
+   * ```ts
+   * LS_A: 0b01 | 0o01 | 0x01  // Each equivalent to 1
+   * ```
    */
   LS_A = 0b01 << 0b00,  // ALL
   /**
    * This option filters the output to include only directory entries.
+   * You can also use other number types for alias, like:
+   * ```ts
+   * LS_D: 0b10 | 0o02 | 0x02  // Each equivalent to 2
+   * ```
    */
   LS_D = 0b01 << 0b01,  // DIRECTORY
   /**
    * This option filters the output to include only regular files (non-directories).
+   * You can also use other number types for alias, like:
+   * ```ts
+   * LS_F: 0b100 | 0o04 | 0x04  // Each equivalent to 4
+   * ```
    */
   LS_F = 0b01 << 0b10   // FILE
 }
@@ -43,13 +62,13 @@ export enum lsTypes {
  * Lists files and/or directories in a specified directory path, filtering by a
  * regular expression pattern.
  *
- * The returned entries are configurable using the additional `options`, such as
- * listing recursively to subdirectories, and filter specific file and/or
+ * The returned entries are configurable using the additional {@link LsOptions options},
+ * such as listing recursively to subdirectories, and filter specific file and/or
  * directory names using a regular expression.
  *
- * The additional `options` can be an object or a regex pattern to specify only the
- * `match` field. If passed as a `RegExp` object, the additional options for reading
- * the directory will uses default options.
+ * The additional `options` can be an object or a regex pattern to specify only
+ * the {@link LsOptions.match} field. If passed as a `RegExp` object,
+ * the additional options for reading the directory will uses default options.
  *
  * If the `options` argument not specified (or `undefined`), then it uses the
  * default value:
@@ -58,19 +77,24 @@ export enum lsTypes {
  *   encoding: 'utf8',
  *   recursive: false,
  *   match: /.+/,
- *   exclude: /^[]/
+ *   exclude: undefined
  * }
  * ```
  *
  * @param dirpath - The directory path to search.
  * @param options - Additional options for reading the directory.
  * @param type - A type to specify the returned file system type to be included.
- *               If not specified or set to 0, then it will includes all types
+ *               If not specified or set to `0`, then it will includes all types
  *               (including regular files and directories).
  *               See {@link lsTypes} to check all supported types.
  *
  * @returns A promise that resolves with an array of matched file paths.
  * @throws {Error} If there is an error occurred while reading a directory.
+ *
+ * @example
+ * // List all installed packages in 'node_modules' directory
+ * ls('node_modules', { exclude: /\.bin/ }, lsTypes.LS_D)
+ *   .then((dirs) => console.log(dirs));
  *
  * @since 0.1.0
  * @see {@link lsTypes}
@@ -82,9 +106,9 @@ export async function ls(
   dirpath: string,
   options?: LsOptions | RegExp | undefined,
   type?:
-    | lsTypes.LS_A
-    | lsTypes.LS_D
-    | lsTypes.LS_F
+    | lsTypes
+    | LsTypesKeys
+    | LsTypesValues
     | undefined
 ): Promise<LsResult> {
   const absdirpath: string = path.resolve(dirpath);
@@ -158,13 +182,13 @@ export async function ls(
  * Lists files in the specified directory path, filtering by a regular
  * expression pattern.
  *
- * The returned entries are configurable using the additional `options`, such as
- * listing recursively to subdirectories, and filter specific file and/or
+ * The returned entries are configurable using the additional {@link LsOptions options},
+ * such as listing recursively to subdirectories, and filter specific file and/or
  * directory names using a regular expression.
  *
- * The additional `options` can be an object or a regex pattern to specify only the
- * `match` field. If passed as a `RegExp` object, the additional options for reading
- * the directory will uses default options.
+ * The additional `options` can be an object or a regex pattern to specify only
+ * the {@link LsOptions.match} field. If passed as a `RegExp` object,
+ * the additional options for reading the directory will uses default options.
  *
  * If the `options` argument not specified (or `undefined`), then it uses the
  * default value:
@@ -173,7 +197,7 @@ export async function ls(
  *   encoding: 'utf8',
  *   recursive: false,
  *   match: /.+/,
- *   exclude: /^[]/
+ *   exclude: undefined
  * }
  * ```
  *
@@ -189,7 +213,7 @@ export async function ls(
  * lsFiles('.', {
  *   recursive: true,
  *   match: /.+\.[cm]*js$/,
- *   exclude: /[\/\\]\btests\b[\/\\]/
+ *   exclude: /[\\/\\]\btests\b[\\/\\]/
  * }).then((files) => console.log(files));
  *
  * @since 0.1.0
@@ -223,7 +247,7 @@ export async function lsFiles(
  *   encoding: 'utf8',
  *   recursive: false,
  *   match: /.+/,
- *   exclude: /^[]/
+ *   exclude: undefined
  * }
  * ```
  *
@@ -237,7 +261,7 @@ export async function lsFiles(
  * // Search and list directory named 'foo' in 'src' directory
  * lsDirs('src', {
  *   recursive: false,
- *   match: /[\/\\]\bfoo\b/,
+ *   match: /[\\/\\]\bfoo\b/,
  * }).then((files) => console.log(files));
  *
  * @since 0.1.0
