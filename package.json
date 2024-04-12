@@ -9,7 +9,8 @@
     "dist/**/*",
     "types/index.d.ts",
     "LICENSE",
-    "README.md"
+    "README.md",
+    "CODE_OF_CONDUCT.md"
   ],
   "exports": {
     ".": "./dist/index.js",
