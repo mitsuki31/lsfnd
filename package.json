@@ -18,7 +18,10 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "tsc",
+    "dev": "tsc",
+    "build": "ts-node scripts/build.ts",
+    "minify": "ts-node scripts/build.ts --minify",
+    "docs": "npm run-script build:docs",
     "build:docs": "typedoc --options typedoc.config.js"
   },
   "repository": {
@@ -36,6 +39,7 @@
     "esbuild": "^0.20.2",
     "ts-node": "~10.9.2",
     "typedoc-material-theme": "^1.0.2",
+    "typedoc-plugin-extras": "^3.0.0",
     "typescript": "~5.4.3"
   },
   "peerDependencies": {

@@ -4,25 +4,30 @@ module.exports = {
   $schema: 'https://typedoc.org/schema.json',
   name: pkg.name.toUpperCase(),
   includeVersion: true,
+  titleLink: pkg.repository.url.replace(/^git\+/, ''),
   entryPoints: [
-    'src/index.ts',
-    'src/lsfnd.ts'
+    'src/lsfnd.ts',
+    'types/index.d.ts',
+    'types/build.prop.d.ts'
   ],
-  out: `./docs/${pkg.name}`,
+  out: `./docs`,
   readme: './README.md',
   tsconfig: './tsconfig.json',
-  plugin: [ 'typedoc-material-theme' ],
-  themeColor: '#3a59ef',
+  plugin: [ 'typedoc-material-theme', 'typedoc-plugin-extras' ],
+  themeColor: '#2230f2',
+  cacheBust: true,
+  footerTypedocVersion: true,
+  footerLastModified: true,
   lightHighlightTheme: 'github-light',
   darkHighlightTheme: 'material-theme-ocean',
   sort: true,
-  useTsLinkResolution: false,
-  gitRemote: pkg.repository.url.replace(/^git\+/, ''),
+  useTsLinkResolution: true,
+  gitRemote: 'origin',
   navigationLinks: {
     'GitHub': pkg.repository.url.replace(/^git\+/, '')
   },
   sidebarLinks: {
-    'Report an issue': pkg.bugs.url + '/new'
+    'Report any issues': pkg.bugs.url + '/new'
   },
   logLevel: 'Verbose'
 };
