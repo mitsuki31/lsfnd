@@ -11,6 +11,7 @@
 * @since   0.1.0
 * @license MIT
 */
+/// <reference types="node" />
 
 /**
  * This type alias represents an array of strings. It is typically used to
@@ -37,11 +38,10 @@ export declare type LsResult = LsEntries | null;
 export declare const lsTypes: LsTypes;
 /**
  * Type representing all possible keys of the {@link lsTypes} enum.
- * @readonly
  * @since 0.1.0
  * @see {@link LsTypes}
  */
-export declare type LsTypesKeys = readonly keyof LsTypes;
+export declare type LsTypesKeys = keyof LsTypes;
 /**
  * Type representing all possible values of the {@link lsTypes} enum.
  * 
