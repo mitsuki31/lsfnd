@@ -162,7 +162,7 @@ export async function ls(
         return (
           resultType && (
             (<RegExp> match).test(entry)
-              && exclude ? !(<RegExp> exclude).test(entry) : true
+              && (exclude ? !(<RegExp> exclude).test(entry) : true)
           )
         ) ? entry : null;
       })
