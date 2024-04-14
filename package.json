@@ -40,6 +40,9 @@
     "url": "https://github.com/mitsuki31/lsfnd/issues"
   },
   "homepage": "https://github.com/mitsuki31/lsfnd#readme",
+  "engines": {
+    "node": ">=16.20.x"
+  },
   "devDependencies": {
     "@types/node": "^20.12.4",
     "esbuild": "^0.20.2",
