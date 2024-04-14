@@ -22,7 +22,10 @@
     "build": "ts-node scripts/build.ts",
     "minify": "ts-node scripts/build.ts --minify",
     "docs": "npm run-script build:docs",
-    "build:docs": "typedoc --options typedoc.config.js"
+    "build:docs": "typedoc --options typedoc.config.js",
+    "test": "node test/lsfnd.spec.cjs && node test/lsfnd.spec.mjs",
+    "test:cjs": "node test/lsfnd.spec.cjs",
+    "test:mjs": "node test/lsfnd.spec.mjs"
   },
   "repository": {
     "type": "git",
