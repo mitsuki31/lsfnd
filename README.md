@@ -9,7 +9,7 @@ The primary benefit of this library is that all implemented APIs execute asynchr
 therefore ensuring their execution will **NOT** block any other processes.
 
 > [!IMPORTANT]\
-> Currently this project only focus on CommonJS (CJS) and ES Modules (ESM).
+> Currently this project only focus on CommonJS (CJS) and ECMAScript Modules (ESM).
 
 ## APIs
 
@@ -123,8 +123,8 @@ ls(dirpath, options, lsTypes.LS_F);
 
 Returns a promise that resolves to an array of string containing the entries result.
 It can be `null` if an error occurred while listing a directory, or returns a
-promise with an empty array if any files and directories doesn't match with the
-specified filter options.
+promise with an empty array if any files doesn't match with the specified filter
+options.
 
 > [!NOTE]\
 > 💡 **Tip**: You can combine options for more granular control. For example,
@@ -180,8 +180,8 @@ ls(dirpath, options, lsTypes.LS_D);
 
 Returns a promise that resolves to an array of string containing the entries result.
 It can be `null` if an error occurred while listing a directory, or returns a
-promise with an empty array if any files and directories doesn't match with the
-specified filter options.
+promise with an empty array if any directories doesn't match with the specified
+filter options.
 
 <details>
 <summary>Example Usage (CJS)</summary>

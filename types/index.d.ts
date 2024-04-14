@@ -44,11 +44,8 @@ export declare const lsTypes: LsTypes;
 export declare type LsTypesKeys = keyof LsTypes;
 /**
  * Type representing all possible values of the {@link lsTypes} enum.
- * 
- * This type contains all possible values for `type` argument in {@link lsfnd!~ls}
- * function with numeric representations using bitwise operators for clarity and
- * potential bit manipulation use cases.
  * @since 0.1.0
+ * @see {@link LsTypes}
  */
 export declare type LsTypesValues =
   | 0b00   // 0 (interpreted the same as LS_A | 1)
@@ -59,7 +56,6 @@ export declare type LsTypesValues =
 /**
  * Interface defining the {@link lsTypes} enum with string literal keys
  * representing different file types and their corresponding numeric values.
- * @internal
  * @readonly
  * @interface
  * @since 0.1.0
@@ -90,7 +86,7 @@ export declare interface LsTypes {
  */
 export declare interface LsOptions {
   /**
-   * Specifies the character encoding to be used when reading file contents. 
+   * Specifies the character encoding to be used when reading a directory. 
    * @defaultValue Defaults to `'utf8'` if not provided.
    */
   encoding?: BufferEncoding | undefined,
@@ -101,8 +97,7 @@ export declare interface LsOptions {
   recursive?: boolean | undefined,
   /**
    * A regular expression or string pattern used to filter the listed entries. 
-   * Only entries matching the pattern (filename or path) will be included 
-   * in the results.
+   * Only entries matching the pattern will be included in the results.
    * @defaultValue `/.+/` (match all files)
    */
   match?: RegExp | string | undefined,

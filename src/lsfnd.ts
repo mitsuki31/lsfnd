@@ -88,7 +88,9 @@ export enum lsTypes {
  *               (including regular files and directories).
  *               See {@link lsTypes} to check all supported types.
  *
- * @returns A promise that resolves with an array of matched file paths.
+ * @returns A promise that resolves with an array of string representing the
+ *          entries result or an empty array if any files and directories doesn't
+ *          match with the specified filter options.
  * @throws {Error} If there is an error occurred while reading a directory.
  *
  * @example
@@ -204,7 +206,9 @@ export async function ls(
  * @param dirpath - The directory path to search.
  * @param options - Additional options for reading the directory.
  *
- * @returns A promise that resolves with an array of matched file paths.
+ * @returns A promise that resolves with an array of string representing the
+ *          entries result or an empty array if any files doesn't match with
+ *          the specified filter options.
  * @throws {Error} If there is an error occurred while reading a directory.
  *
  * @example
@@ -254,7 +258,9 @@ export async function lsFiles(
  * @param dirpath - The directory path to search.
  * @param options - Additional options for reading the directory.
  *
- * @returns A promise that resolves with an array of matched file paths.
+ * @returns A promise that resolves with an array of string representing the
+ *          entries result or an empty array if any directories doesn't match
+ *          with the specified filter options.
  * @throws {Error} If there is an error occurred while reading a directory.
  *
  * @example
