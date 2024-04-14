@@ -1,16 +1,15 @@
 {
   "name": "lsfnd",
   "version": "0.1.0",
-  "description": "Easy list files and directories with regex filter support",
+  "title": "LSFND",
+  "description": "A small Node.js library to ease files and directories listing featuring filter support.",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
-  "private": true,
   "files": [
     "dist/**/*",
     "types/index.d.ts",
     "LICENSE",
-    "README.md",
-    "CODE_OF_CONDUCT.md"
+    "README.md"
   ],
   "exports": {
     ".": "./dist/index.js",
@@ -30,6 +29,9 @@
     "url": "git+https://github.com/mitsuki31/lsfnd.git"
   },
   "author": "Ryuu Mitsuki <dhefam31@gmail.com> (https://github.com/mitsuki31)",
+  "contributors": [
+    "Ryuu Mitsuki <dhefam31@gmail.com> (https://github.com/mitsuki31)"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/mitsuki31/lsfnd/issues"
@@ -45,5 +47,14 @@
   },
   "peerDependencies": {
     "typedoc": "^0.25.12"
-  }
+  },
+  "keywords": [
+    "ls",
+    "list",
+    "javascript",
+    "typescript",
+    "node",
+    "nodejs",
+    "library"
+  ]
 }
