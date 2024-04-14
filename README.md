@@ -1,5 +1,9 @@
 # LSFND
 
+![Version](https://img.shields.io/github/package-json/v/mitsuki31/lsfnd?logo=npm&label=LSFND)
+[![Test CI](https://github.com/mitsuki31/lsfnd/actions/workflows/test.yml/badge.svg)](https://github.com/mitsuki31/lsfnd/actions/workflows/test.yml)
+[![License](https://img.shields.io/github/license/mitsuki31/lsfnd?logo=github&logoColor=f9f9f9&label=License&labelColor=yellow&color=white)](https://github.com/mitsuki31/lsfnd/tree/master/LICENSE)
+
 **LSFND**, short for _list (ls) files (f) and (n) directories (d)_, is a small
 Node.js library designed to simplify file and directory listing tasks. It provides a
 lightweight and efficient way to explore your file system and retrieve information
