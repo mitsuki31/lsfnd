@@ -39,7 +39,7 @@
   "bugs": {
     "url": "https://github.com/mitsuki31/lsfnd/issues"
   },
-  "homepage": "https://github.com/mitsuki31/lsfnd#readme",
+  "homepage": "https://mitsuki31.github.io/lsfnd",
   "engines": {
     "node": ">=16.20.x"
   },
