@@ -7,6 +7,7 @@ module.exports = {
   titleLink: pkg.repository.url.replace(/^git\+/, ''),
   entryPoints: [
     'src/lsfnd.ts',
+    'src/lsTypes.ts',
     'types/index.d.ts',
     'types/build.prop.d.ts'
   ],
