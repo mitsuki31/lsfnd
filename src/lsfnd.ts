@@ -2,8 +2,7 @@
  * A module that offers some functions to read and list files and/or directories
  * in a specified directory with support filtering using regular expression pattern.
  *
- * Copyright (c) 2024 Ryuu Mitsuki.
- * Licensed under the MIT license.
+ * Copyright (c) 2024 Ryuu Mitsuki. All rights reserved.
  *
  * @module  lsfnd
  * @author  Ryuu Mitsuki (https://github.com/mitsuki31)
@@ -14,6 +13,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { isRegExp } from 'node:util';
+import { lsTypes }  from './lsTypes';
 import type {
   LsEntries,
   LsResult,
@@ -21,42 +21,6 @@ import type {
   LsTypesKeys,
   LsTypesValues
 } from '../types';
-
-/**
- * This enumeration defines the different types of listings supported by
- * the {@link ls} function. It specifies which file system entries should be
- * included in the results.
- *
- * @readonly
- * @since 0.1.0
- * @see {@link ls}
- */
-export enum lsTypes {
-  /**
-   * This option lists both regular files and directories in the output.
-   * You can also use other number types for alias, like:
-   * ```ts
-   * LS_A: 0b01 | 0o01 | 0x01  // Each equivalent to 1
-   * ```
-   */
-  LS_A = 0b01 << 0b00,  // ALL
-  /**
-   * This option filters the output to include only directory entries.
-   * You can also use other number types for alias, like:
-   * ```ts
-   * LS_D: 0b10 | 0o02 | 0x02  // Each equivalent to 2
-   * ```
-   */
-  LS_D = 0b01 << 0b01,  // DIRECTORY
-  /**
-   * This option filters the output to include only regular files (non-directories).
-   * You can also use other number types for alias, like:
-   * ```ts
-   * LS_F: 0b100 | 0o04 | 0x04  // Each equivalent to 4
-   * ```
-   */
-  LS_F = 0b01 << 0b10   // FILE
-}
 
 /**
  * Lists files and/or directories in a specified directory path, filtering by a
@@ -86,7 +50,7 @@ export enum lsTypes {
  * @param type - A type to specify the returned file system type to be included.
  *               If not specified or set to `0`, then it will includes all types
  *               (including regular files and directories).
- *               See {@link lsTypes} to check all supported types.
+ *               See {@link !lsTypes~lsTypes lsTypes} to check all supported types.
  *
  * @returns A promise that resolves with an array of string representing the
  *          entries result or an empty array if any files and directories doesn't
