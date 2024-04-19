@@ -13,6 +13,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { isRegExp } from 'node:util';
+import { URL } from 'node:url';
 import { lsTypes }  from './lsTypes';
 import type {
   LsEntries,
@@ -21,6 +22,46 @@ import type {
   LsTypesKeys,
   LsTypesValues
 } from '../types';
+
+/**
+ * Converts a file URL to a file path.
+ * 
+ * This function is similar to Node.js'
+ * [`url.fileURLToPath`](https://nodejs.org/api/url.html#urlfileurltopathurl)
+ * function, but with added support for relative file paths (e.g., "file:./foo").
+ * If the input URL does not adhere to the file URL scheme or if it contains
+ * unsupported formats, such as providing not `file:` protocol or invalid path
+ * structures, an error will be thrown.
+ * 
+ * @param url - The file URL to convert. It can be either an instance of `URL`
+ *              or a string representing a file URL and must starts with `"file:"`
+ *              protocol.
+ * @returns     A string representing the corresponding file path.
+ * @throws {URIError} If the URL is not a valid file URL or if it contains
+ *                    unsupported formats.
+ * 
+ * @example
+ * // Convert a file URL to a file path
+ * const filePath = fileUrlToPath('file:///path/to/file.txt');
+ * console.log(filePath); // Output: "/path/to/file.txt"
+ * 
+ * @example
+ * // Handle relative file paths
+ * const filePath = fileUrlToPath('file:./relative/file.txt');
+ * console.log(filePath); // Output: "./relative/file.txt"
+ *
+ * @since 1.0.0
+ * @see   {@link https://nodejs.org/api/url.html#urlfileurltopathurl url.fileURLToPath}
+ *
+ * @internal
+ */
+function fileUrlToPath(url: URL | string): string {
+  if ((url instanceof URL && url.protocol !== 'file:')
+      || (typeof url === 'string' && !/^file:(\/\/?|\.\.?\/*)/.test(url))) {
+    throw new URIError('Invalid URL file scheme');
+  }
+  return (url instanceof URL) ? url.pathname : url.replace(/^file:/, '');
+}
 
 /**
  * Lists files and/or directories in a specified directory path, filtering by a
