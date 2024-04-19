@@ -25,30 +25,30 @@ import type {
 
 /**
  * Converts a file URL to a file path.
- * 
+ *
  * This function is similar to Node.js'
  * [`url.fileURLToPath`](https://nodejs.org/api/url.html#urlfileurltopathurl)
- * function, but with added support for relative file paths (e.g., "file:./foo").
+ * function, but with added support for relative file paths (e.g., `"file:./foo"`).
  * If the input URL does not adhere to the file URL scheme or if it contains
- * unsupported formats, such as providing not `file:` protocol or invalid path
+ * unsupported formats, such as providing unsupported protocols or invalid path
  * structures, an error will be thrown.
- * 
+ *
  * @param url - The file URL to convert. It can be either an instance of `URL`
  *              or a string representing a file URL and must starts with `"file:"`
  *              protocol.
  * @returns     A string representing the corresponding file path.
  * @throws {URIError} If the URL is not a valid file URL or if it contains
  *                    unsupported formats.
- * 
+ *
  * @example
  * // Convert a file URL to a file path
  * const filePath = fileUrlToPath('file:///path/to/file.txt');
  * console.log(filePath); // Output: "/path/to/file.txt"
- * 
+ *
  * @example
  * // Handle relative file paths
- * const filePath = fileUrlToPath('file:./relative/file.txt');
- * console.log(filePath); // Output: "./relative/file.txt"
+ * const filePath = fileUrlToPath('file:./path/to/file.txt');
+ * console.log(filePath); // Output: "./path/to/file.txt"
  *
  * @since 1.0.0
  * @see   {@link https://nodejs.org/api/url.html#urlfileurltopathurl url.fileURLToPath}
@@ -72,8 +72,8 @@ function fileUrlToPath(url: URL | string): string {
  * directory names using a regular expression.
  *
  * The additional `options` can be an object or a regex pattern to specify only
- * the {@link LsOptions.match} field. If passed as a `RegExp` object,
- * the additional options for reading the directory will uses default options.
+ * the {@link LsOptions.match match} field. If passed as a `RegExp` object, the rest
+ * options (except the `match` field) for reading the directory will uses default options.
  *
  * If the `options` argument not specified (or `undefined`), then it uses the
  * default value:
@@ -86,17 +86,36 @@ function fileUrlToPath(url: URL | string): string {
  * }
  * ```
  *
- * @param dirpath - The directory path to search.
- * @param options - Additional options for reading the directory.
+ * <br>
+ * <details>
+ * <summary><b>History</b></summary>
+ *
+ * ### 1.0.0
+ * As of version 1.0.0, this function now accepts file URL paths. This can be
+ * either a string URL path or a `URL` object, and it must follow the `'file:'` protocol.
+ * An `URIError` will be thrown if the specified file URL path has invalid file
+ * URL syntax or is used with unsupported protocols.
+ *
+ * ### 0.1.0
+ * Added in version 0.1.0.
+ *
+ * </details>
+ *
+ * @param dirpath - The directory path to search, must be a **Node** path
+ *                  (i.e., similar to POSIX path) or a valid file URL path.
+ * @param options - Additional options for reading the directory. Refer to
+ *                  {@link LsOptions} documentation for more details.
  * @param type - A type to specify the returned file system type to be included.
  *               If not specified or set to `0`, then it will includes all types
  *               (including regular files and directories).
  *               See {@link !lsTypes~lsTypes lsTypes} to check all supported types.
  *
  * @returns A promise that resolves with an array of string representing the
- *          entries result or an empty array if any files and directories doesn't
- *          match with the specified filter options.
+ *          entries result excluding `'.'` and `'..'` or an empty array (`[]`)
+ *          if any files and directories does not match with the specified filter options.
  * @throws {Error} If there is an error occurred while reading a directory.
+ * @throws {URIError} If the given URL path contains invalid file URL scheme or
+ *                    using unsupported protocols.
  *
  * @example
  * // List all installed packages in 'node_modules' directory
@@ -222,8 +241,8 @@ export async function ls(
  * directory names using a regular expression.
  *
  * The additional `options` can be an object or a regex pattern to specify only
- * the {@link LsOptions.match} field. If passed as a `RegExp` object,
- * the additional options for reading the directory will uses default options.
+ * the {@link LsOptions.match match} field. If passed as a `RegExp` object, the rest
+ * options (except the `match` field) for reading the directory will uses default options.
  *
  * If the `options` argument not specified (or `undefined`), then it uses the
  * default value:
@@ -236,13 +255,32 @@ export async function ls(
  * }
  * ```
  *
- * @param dirpath - The directory path to search.
- * @param options - Additional options for reading the directory.
+ * <br>
+ * <details>
+ * <summary><b>History</b></summary>
+ *
+ * ### 1.0.0
+ * As of version 1.0.0, this function now accepts file URL paths. This can be
+ * either a string URL path or a `URL` object, and it must follow the `'file:'` protocol.
+ * An `URIError` will be thrown if the specified file URL path has invalid file
+ * URL syntax or is used with unsupported protocols.
+ *
+ * ### 0.1.0
+ * Added in version 0.1.0.
+ *
+ * </details>
+ *
+ * @param dirpath - The directory path to search, must be a **Node** path
+ *                  (i.e., similar to POSIX path) or a valid file URL path.
+ * @param options - Additional options for reading the directory. Refer to
+ *                  {@link LsOptions} documentation for more details.
  *
  * @returns A promise that resolves with an array of string representing the
- *          entries result or an empty array if any files doesn't match with
- *          the specified filter options.
+ *          entries result excluding `'.'` and `'..'` or an empty array (`[]`)
+ *          if any files and directories does not match with the specified filter options.
  * @throws {Error} If there is an error occurred while reading a directory.
+ * @throws {URIError} If the given URL path contains invalid file URL scheme or
+ *                    using unsupported protocols.
  *
  * @example
  * // List all JavaScript files in current directory recursively,
@@ -269,13 +307,13 @@ export async function lsFiles(
  * Lists files in the specified directory path, filtering by a regular
  * expression pattern.
  *
- * The returned entries are configurable using the additional `options`, such as
- * listing recursively to subdirectories, and filter specific file and/or
+ * The returned entries are configurable using the additional {@link LsOptions options},
+ * such as listing recursively to subdirectories, and filter specific file and/or
  * directory names using a regular expression.
  *
- * The additional `options` can be an object or a regex pattern to specify only the
- * `match` field. If passed as a `RegExp` object, the additional options for reading
- * the directory will uses default options.
+ * The additional `options` can be an object or a regex pattern to specify only
+ * the {@link LsOptions.match match} field. If passed as a `RegExp` object, the rest
+ * options (except the `match` field) for reading the directory will uses default options.
  *
  * If the `options` argument not specified (or `undefined`), then it uses the
  * default value:
@@ -288,13 +326,32 @@ export async function lsFiles(
  * }
  * ```
  *
- * @param dirpath - The directory path to search.
- * @param options - Additional options for reading the directory.
+ * <br>
+ * <details>
+ * <summary><b>History</b></summary>
+ *
+ * ### 1.0.0
+ * As of version 1.0.0, this function now accepts file URL paths. This can be
+ * either a string URL path or a `URL` object, and it must follow the `'file:'` protocol.
+ * An `URIError` will be thrown if the specified file URL path has invalid file
+ * URL syntax or is used with unsupported protocols.
+ *
+ * ### 0.1.0
+ * Added in version 0.1.0.
+ *
+ * </details>
+ *
+ * @param dirpath - The directory path to search, must be a **Node** path
+ *                  (i.e., similar to POSIX path) or a valid file URL path.
+ * @param options - Additional options for reading the directory. Refer to
+ *                  {@link LsOptions} documentation for more details.
  *
  * @returns A promise that resolves with an array of string representing the
- *          entries result or an empty array if any directories doesn't match
- *          with the specified filter options.
+ *          entries result excluding `'.'` and `'..'` or an empty array (`[]`)
+ *          if any files and directories does not match with the specified filter options.
  * @throws {Error} If there is an error occurred while reading a directory.
+ * @throws {URIError} If the given URL path contains invalid file URL scheme or
+ *                    using unsupported protocols.
  *
  * @example
  * // Search and list directory named 'foo' in 'src' directory
