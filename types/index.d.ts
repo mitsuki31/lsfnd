@@ -113,18 +113,18 @@ export declare interface LsOptions {
 // ====== APIs ===== //
 
 export declare function ls(
-  dirpath: string,
+  dirpath: string | URL,
   options?: LsOptions | RegExp | undefined,
   type?: LsTypes | LsTypesKeys | LsTypesValues | undefined
 ): Promise<LsResult>
 
 export declare function lsFiles(
-  dirpath: string,
+  dirpath: string | URL,
   options?: LsOptions | RegExp | undefined
 ): Promise<LsResult>
 
 export declare function lsDirs(
-  dirpath: string,
+  dirpath: string | URL,
   options?: LsOptions | RegExp | undefined
 ): Promise<LsResult>
 

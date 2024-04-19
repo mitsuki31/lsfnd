@@ -103,6 +103,13 @@ function fileUrlToPath(url: URL | string): string {
  * ls('node_modules', { exclude: /\.bin/ }, lsTypes.LS_D)
  *   .then((dirs) => console.log(dirs));
  *
+ * @example
+ * // List current directory using an URL object
+ * const { pathToFileURL } = require('node:url');
+ * // ESM: import { pathToFileURL } from 'node:url';
+ * ls(pathToFileURL('.')).then((entries) =>
+ *   console.log(entries));
+ *
  * @since 0.1.0
  * @see {@link lsTypes}
  * @see {@link lsFiles}
@@ -110,7 +117,7 @@ function fileUrlToPath(url: URL | string): string {
  * @see {@link https://nodejs.org/api/fs.html#fsreaddirpath-options-callback fs.readdir}
  */
 export async function ls(
-  dirpath: string,
+  dirpath: string | URL,
   options?: LsOptions | RegExp | undefined,
   type?:
     | lsTypes
@@ -118,9 +125,30 @@ export async function ls(
     | LsTypesValues
     | undefined
 ): Promise<LsResult> {
-  const absdirpath: string = path.resolve(dirpath);
+  let absdirpath: string;
   let match: string | RegExp,
       exclude: string | RegExp | undefined;
+
+  if (dirpath instanceof URL) {
+    if (dirpath.protocol !== 'file:') {
+      throw new URIError(`Unsupported protocol: '${dirpath.protocol}'`);
+    }
+    dirpath = dirpath.pathname;   // Extract the path (without the protocol)
+  } else if (typeof dirpath === 'string') {
+    if (/^[a-zA-Z]+:/.test(dirpath)) {
+      if (!dirpath.startsWith('file:')) {
+        throw new URIError(`Unsupported protocol: '${dirpath.split(':')[0]}:'`);
+      }
+      dirpath = fileUrlToPath(dirpath);
+    }
+  } else {
+    throw new Error('Unknown type, expected a string or an URL object');
+  }
+
+  // Resolve its absolute path
+  absdirpath = path.isAbsolute(<string> dirpath)
+    ? <string> dirpath
+    : path.resolve(<string> dirpath);
 
   if (isRegExp(options)) {
     match = options;
@@ -151,7 +179,7 @@ export async function ls(
     // Filter the entries
     result = await Promise.all(
       entries.map(async function (entry: string): Promise<(string | null)> {
-        entry = path.join(dirpath, entry);
+        entry = path.join(<string> dirpath, entry);
         const stats: fs.Stats = await fs.promises.stat(entry);
         let resultType: boolean = false;
 
@@ -231,7 +259,7 @@ export async function ls(
  * @see {@link https://nodejs.org/api/fs.html#fsreaddirpath-options-callback fs.readdir}
  */
 export async function lsFiles(
-  dirpath: string,
+  dirpath: string | URL,
   options?: LsOptions | RegExp
 ): Promise<LsResult> {
   return ls(dirpath, options, lsTypes.LS_F);
@@ -281,7 +309,7 @@ export async function lsFiles(
  * @see {@link https://nodejs.org/api/fs.html#fsreaddirpath-options-callback fs.readdir}
  */
 export async function lsDirs(
-  dirpath: string,
+  dirpath: string | URL,
   options?: LsOptions | RegExp
 ): Promise<LsResult> {
   return ls(dirpath, options, lsTypes.LS_D);
