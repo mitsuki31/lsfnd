@@ -62,5 +62,9 @@ module.exports = {
   deepEq: assert.deepStrictEqual,
   notDeepEq: assert.notDeepStrictEqual,
   throws: assert.throws,
-  rejects: assert.rejects
+  doesNotThrow: assert.doesNotThrow,
+  rejects: assert.rejects,
+  doesNotReject: assert.doesNotReject,
+  match: assert.match,
+  doesNotMatch: assert.doesNotMatch
 };
