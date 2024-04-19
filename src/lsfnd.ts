@@ -148,7 +148,7 @@ export async function ls(
   // Resolve its absolute path
   absdirpath = path.isAbsolute(<string> dirpath)
     ? <string> dirpath
-    : path.resolve(<string> dirpath);
+    : path.posix.resolve(<string> dirpath);
 
   if (isRegExp(options)) {
     match = options;
