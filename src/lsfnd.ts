@@ -23,6 +23,8 @@ import type {
   LsTypesValues
 } from '../types';
 
+type Unpack<A> = A extends Array<(infer U)> ? U : A;
+
 /**
  * Converts a file URL to a file path.
  *
@@ -61,6 +63,49 @@ function fileUrlToPath(url: URL | string): string {
     throw new URIError('Invalid URL file scheme');
   }
   return (url instanceof URL) ? url.pathname : url.replace(/^file:/, '');
+}
+
+/**
+ * Checks if a provided type matches any of the allowed types.
+ *
+ * This function verifies if a provided `type` argument matches any of the
+ * allowed types specified in the `validTypes` array. It throws a `TypeError`
+ * if the `type` doesn't match any valid type.
+ *
+ * @param type - The type value to be checked.
+ * @param validTypes - An array containing the allowed types for the `type` parameter.
+ *
+ * @throws TypeError - If the provided `type` doesn't match any of the valid types.
+ *
+ * @since 1.0.0
+ * @internal
+ */
+function checkType<N extends null | undefined>(
+  type: lsTypes | LsTypesKeys | LsTypesValues | N,
+  validTypes: Array<(string | number | N)>
+): void {
+  function joinAll(arr: (typeof validTypes), delim: string): string {
+    let str: string = '';
+    arr.forEach((e: Unpack<(typeof validTypes)>, i: number) => {
+      if (i > 0 && i <= arr.length - 1) str += delim;
+      str += (typeof e === 'string') ? `'${e}'`
+        : (e === null) ? 'null'
+          : (typeof e === 'undefined') ? 'undefined' : e;
+    });
+    return str;
+  }
+
+  let match: boolean = false;
+  validTypes.forEach((validType: Unpack<(typeof validTypes)>) => {
+    if (!match && type === validType) match = true;
+  });
+  if (!match) {
+    throw new TypeError(
+      `Invalid 'type' value of ${type} ('${typeof type}'). Valid type is "${
+        joinAll(validTypes.sort(), ' | ')
+      }"`);
+  }
+  return;
 }
 
 /**
@@ -187,6 +232,9 @@ export async function ls(
     throw new TypeError('Unknown type of "options": '
       + (Array.isArray(options) ? 'array' : typeof options));
   }
+
+  // Check the type argument
+  checkType(type!, [ ...Object.values(lsTypes), 0, null, undefined ]);
 
   let result: LsResult = null;
   try {
