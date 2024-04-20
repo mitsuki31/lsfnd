@@ -173,18 +173,19 @@ export async function ls(
     match = options;
     exclude = undefined;
     options = { encoding: 'utf8', recursive: false };
-  } else if (typeof options === 'object') {
+  } else if (typeof options === 'undefined' || options === null) {
+    options = { encoding: 'utf8', recursive: false };
+    match = /.+/;
+  } else if (options && typeof options === 'object' && !Array.isArray(options)) {
     match = (typeof options!.match === 'string')
       ? new RegExp(options!.match)
       : (isRegExp(options!.match) ? options!.match : /.+/);
     exclude = (typeof options!.exclude === 'string')
       ? new RegExp(options!.exclude)
       : (isRegExp(options!.exclude) ? options!.exclude : undefined);
-  } else if (typeof options === 'undefined' || options === null) {
-    options = { encoding: 'utf8', recursive: false };
-    match = /.+/;
   } else {
-    throw new TypeError('Unknown type of "options": ' + typeof options);
+    throw new TypeError('Unknown type of "options": '
+      + (Array.isArray(options) ? 'array' : typeof options));
   }
 
   let result: LsResult = null;
