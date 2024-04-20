@@ -44,9 +44,9 @@ async function it(desc, func, continueOnErr=false) {
   const { isAsyncFunction } = require('node:util').types;
   try {
     isAsyncFunction(func) ? await func() : func();
-    console.log(`  \x1b[92m\u2714 \x1b[0m\x1b[1m${desc}\x1b[0m`);
+    console.log(`  \x1b[92m\u2714 \x1b[0m\x1b[2m${desc}\x1b[0m`);
   } catch (err) {
-    console.error(`  \x1b[91m\u2718 \x1b[0m\x1b[1m${desc}\x1b[0m\n`);
+    console.error(`  \x1b[91m\u2718 \x1b[0m${desc}\n`);
     console.error(new TestError(err.message));
     !!continueOnErr || process.exit(1);  // Force terminate the process
   }
