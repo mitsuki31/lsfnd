@@ -205,9 +205,11 @@ export async function ls(
 
         switch (type) {
           case lsTypes.LS_D:
+          case 'LS_D':
             resultType = (!stats.isFile() && stats.isDirectory());
             break;
           case lsTypes.LS_F:
+          case 'LS_F':
             resultType = (stats.isFile() && !stats.isDirectory());
             break;
           // If set to `LS_A` or not known value, default to include all types
