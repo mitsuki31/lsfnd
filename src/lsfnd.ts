@@ -260,8 +260,7 @@ export async function ls(
           case 'LS_F':
             resultType = (stats.isFile() && !stats.isDirectory());
             break;
-          // If set to `LS_A` or not known value, default to include all types
-          default: resultType = true;
+          default: resultType = (stats.isFile() || stats.isDirectory());
         }
 
         return (
@@ -272,10 +271,12 @@ export async function ls(
         ) ? entry : null;
       })
     ).then(function (results: Array<string | null>): LsEntries {
-      return <LsEntries> results.filter(function (entry: string | null): boolean {
-        // Remove any null entries
-        return !!entry!;
-      });
+      return <LsEntries> results.filter(
+        function (entry: Unpack<(typeof results)>): boolean {
+          // Remove any null entries
+          return !!entry!;
+        }
+      );
     });
   } catch (err: unknown) {
     if (err instanceof Error) throw err;
