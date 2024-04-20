@@ -45,11 +45,27 @@ it('list root directory using file URL path', async () => {
   await doesNotReject(ls('file:'.concat(rootDirPosix)), URIError);
 }, false);
 
+it('test if the options argument allows explicit null value', async () => {
+  await doesNotReject(lsFiles(__dirname, null), TypeError);
+}, false);
+
+it('test if the type argument accepts a string value', async () => {
+  await doesNotReject(ls(__dirname, {}, 'LS_D'), TypeError);
+}, false);
+
 it('throws an error if the given directory path not exist', async () => {
   await rejects(ls('./this/is/not/exist/directory/path'), Error);
 }, false);
 
 it('throws an URIError if the given file URL path using unsupported protocol',
   async () => await rejects(ls('http:'.concat(rootDirPosix)), URIError),
+  false
+);
+
+it('throws a `TypeError` if the given type is an unexpected value',
+  async () => {
+    await rejects(ls(__dirname, {}, 'LS_FOO'), TypeError);  // Invalid string value test
+    await rejects(ls(__dirname, {}, []), TypeError);        // Array test
+  },
   false
 );
