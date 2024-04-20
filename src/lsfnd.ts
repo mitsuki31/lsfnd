@@ -39,8 +39,8 @@ type Unpack<A> = A extends Array<(infer U)> ? U : A;
  *              or a string representing a file URL and must starts with `"file:"`
  *              protocol.
  * @returns     A string representing the corresponding file path.
- * @throws {URIError} If the URL is not a valid file URL or if it contains
- *                    unsupported formats.
+ * @throws {@link https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/URIError **URIError**} -
+ *         If the URL is not a valid file URL or if it contains unsupported formats.
  *
  * @example
  * // Convert a file URL to a file path
@@ -75,7 +75,8 @@ function fileUrlToPath(url: URL | string): string {
  * @param type - The type value to be checked.
  * @param validTypes - An array containing the allowed types for the `type` parameter.
  *
- * @throws TypeError - If the provided `type` doesn't match any of the valid types.
+ * @throws {@link https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/TypeError **TypeError**} -
+ *         If the provided `type` doesn't match any of the valid types.
  *
  * @since 1.0.0
  * @internal
@@ -158,9 +159,11 @@ function checkType<N extends null | undefined>(
  * @returns A promise that resolves with an array of string representing the
  *          entries result excluding `'.'` and `'..'` or an empty array (`[]`)
  *          if any files and directories does not match with the specified filter options.
- * @throws {Error} If there is an error occurred while reading a directory.
- * @throws {URIError} If the given URL path contains invalid file URL scheme or
- *                    using unsupported protocols.
+ * @throws {@link https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error **Error**} -
+ *         If there is an error occurred while reading a directory.
+ * @throws {@link https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/URIError **URIError**} -
+ *         If the given URL path contains invalid file URL scheme or using
+ *         unsupported protocols.
  *
  * @example
  * // List all installed packages in 'node_modules' directory
@@ -330,9 +333,11 @@ export async function ls(
  * @returns A promise that resolves with an array of string representing the
  *          entries result excluding `'.'` and `'..'` or an empty array (`[]`)
  *          if any files and directories does not match with the specified filter options.
- * @throws {Error} If there is an error occurred while reading a directory.
- * @throws {URIError} If the given URL path contains invalid file URL scheme or
- *                    using unsupported protocols.
+ * @throws {@link https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error **Error**} -
+ *         If there is an error occurred while reading a directory.
+ * @throws {@link https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/URIError **URIError**} -
+ *         If the given URL path contains invalid file URL scheme or using
+ *         unsupported protocols.
  *
  * @example
  * // List all JavaScript files in current directory recursively,
@@ -401,9 +406,11 @@ export async function lsFiles(
  * @returns A promise that resolves with an array of string representing the
  *          entries result excluding `'.'` and `'..'` or an empty array (`[]`)
  *          if any files and directories does not match with the specified filter options.
- * @throws {Error} If there is an error occurred while reading a directory.
- * @throws {URIError} If the given URL path contains invalid file URL scheme or
- *                    using unsupported protocols.
+ * @throws {@link https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error **Error**} -
+ *         If there is an error occurred while reading a directory.
+ * @throws {@link https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/URIError **URIError**} -
+ *         If the given URL path contains invalid file URL scheme or using
+ *         unsupported protocols.
  *
  * @example
  * // Search and list directory named 'foo' in 'src' directory
