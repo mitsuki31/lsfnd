@@ -23,6 +23,8 @@ import type {
   LsTypesValues
 } from '../types';
 
+type Unpack<A> = A extends Array<(infer U)> ? U : A;
+
 /**
  * Converts a file URL to a file path.
  *
@@ -37,8 +39,8 @@ import type {
  *              or a string representing a file URL and must starts with `"file:"`
  *              protocol.
  * @returns     A string representing the corresponding file path.
- * @throws {URIError} If the URL is not a valid file URL or if it contains
- *                    unsupported formats.
+ * @throws {@link https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/URIError **URIError**} -
+ *         If the URL is not a valid file URL or if it contains unsupported formats.
  *
  * @example
  * // Convert a file URL to a file path
@@ -61,6 +63,50 @@ function fileUrlToPath(url: URL | string): string {
     throw new URIError('Invalid URL file scheme');
   }
   return (url instanceof URL) ? url.pathname : url.replace(/^file:/, '');
+}
+
+/**
+ * Checks if a provided type matches any of the allowed types.
+ *
+ * This function verifies if a provided `type` argument matches any of the
+ * allowed types specified in the `validTypes` array. It throws a `TypeError`
+ * if the `type` doesn't match any valid type.
+ *
+ * @param type - The type value to be checked.
+ * @param validTypes - An array containing the allowed types for the `type` parameter.
+ *
+ * @throws {@link https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/TypeError **TypeError**} -
+ *         If the provided `type` doesn't match any of the valid types.
+ *
+ * @since 1.0.0
+ * @internal
+ */
+function checkType<N extends null | undefined>(
+  type: lsTypes | LsTypesKeys | LsTypesValues | N,
+  validTypes: Array<(string | number | N)>
+): void {
+  function joinAll(arr: (typeof validTypes), delim: string): string {
+    let str: string = '';
+    arr.forEach((e: Unpack<(typeof validTypes)>, i: number) => {
+      if (i > 0 && i <= arr.length - 1) str += delim;
+      str += (typeof e === 'string') ? `'${e}'`
+        : (e === null) ? 'null'
+          : (typeof e === 'undefined') ? 'undefined' : e;
+    });
+    return str;
+  }
+
+  let match: boolean = false;
+  validTypes.forEach((validType: Unpack<(typeof validTypes)>) => {
+    if (!match && type === validType) match = true;
+  });
+  if (!match) {
+    throw new TypeError(
+      `Invalid 'type' value of ${type} ('${typeof type}'). Valid type is "${
+        joinAll(validTypes.sort(), ' | ')
+      }"`);
+  }
+  return;
 }
 
 /**
@@ -113,9 +159,11 @@ function fileUrlToPath(url: URL | string): string {
  * @returns A promise that resolves with an array of string representing the
  *          entries result excluding `'.'` and `'..'` or an empty array (`[]`)
  *          if any files and directories does not match with the specified filter options.
- * @throws {Error} If there is an error occurred while reading a directory.
- * @throws {URIError} If the given URL path contains invalid file URL scheme or
- *                    using unsupported protocols.
+ * @throws {@link https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error **Error**} -
+ *         If there is an error occurred while reading a directory.
+ * @throws {@link https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/URIError **URIError**} -
+ *         If the given URL path contains invalid file URL scheme or using
+ *         unsupported protocols.
  *
  * @example
  * // List all installed packages in 'node_modules' directory
@@ -188,6 +236,9 @@ export async function ls(
       + (Array.isArray(options) ? 'array' : typeof options));
   }
 
+  // Check the type argument
+  checkType(type!, [ ...Object.values(lsTypes), 0, null, undefined ]);
+
   let result: LsResult = null;
   try {
     // Read the specified directory path recursively
@@ -205,13 +256,14 @@ export async function ls(
 
         switch (type) {
           case lsTypes.LS_D:
+          case 'LS_D':
             resultType = (!stats.isFile() && stats.isDirectory());
             break;
           case lsTypes.LS_F:
+          case 'LS_F':
             resultType = (stats.isFile() && !stats.isDirectory());
             break;
-          // If set to `LS_A` or not known value, default to include all types
-          default: resultType = true;
+          default: resultType = (stats.isFile() || stats.isDirectory());
         }
 
         return (
@@ -222,10 +274,12 @@ export async function ls(
         ) ? entry : null;
       })
     ).then(function (results: Array<string | null>): LsEntries {
-      return <LsEntries> results.filter(function (entry: string | null): boolean {
-        // Remove any null entries
-        return !!entry!;
-      });
+      return <LsEntries> results.filter(
+        function (entry: Unpack<(typeof results)>): boolean {
+          // Remove any null entries
+          return !!entry!;
+        }
+      );
     });
   } catch (err: unknown) {
     if (err instanceof Error) throw err;
@@ -279,9 +333,11 @@ export async function ls(
  * @returns A promise that resolves with an array of string representing the
  *          entries result excluding `'.'` and `'..'` or an empty array (`[]`)
  *          if any files and directories does not match with the specified filter options.
- * @throws {Error} If there is an error occurred while reading a directory.
- * @throws {URIError} If the given URL path contains invalid file URL scheme or
- *                    using unsupported protocols.
+ * @throws {@link https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error **Error**} -
+ *         If there is an error occurred while reading a directory.
+ * @throws {@link https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/URIError **URIError**} -
+ *         If the given URL path contains invalid file URL scheme or using
+ *         unsupported protocols.
  *
  * @example
  * // List all JavaScript files in current directory recursively,
@@ -350,9 +406,11 @@ export async function lsFiles(
  * @returns A promise that resolves with an array of string representing the
  *          entries result excluding `'.'` and `'..'` or an empty array (`[]`)
  *          if any files and directories does not match with the specified filter options.
- * @throws {Error} If there is an error occurred while reading a directory.
- * @throws {URIError} If the given URL path contains invalid file URL scheme or
- *                    using unsupported protocols.
+ * @throws {@link https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error **Error**} -
+ *         If there is an error occurred while reading a directory.
+ * @throws {@link https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/URIError **URIError**} -
+ *         If the given URL path contains invalid file URL scheme or using
+ *         unsupported protocols.
  *
  * @example
  * // Search and list directory named 'foo' in 'src' directory
