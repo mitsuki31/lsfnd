@@ -3,8 +3,7 @@
 * Project: lsfnd (https://github.com/mitsuki31/lsfnd.git)  
 * Definitions by: Ryuu Mitsuki (https://github.com/mitsuki31)  
 *
-* Copyright (c) 2024 Ryuu Mitsuki.
-* Licensed under the MIT license.
+* Copyright (c) 2024 Ryuu Mitsuki. All rights reserved.
 *
 * @module  types
 * @author  Ryuu Mitsuki (https://github.com/mitsuki31)
@@ -21,6 +20,7 @@
  * @since 0.1.0
  */
 export declare type LsEntries = Array<string>;
+
 /**
  * This type alias represents the possible return values of the `ls*` functions.
  * It can be either a {@link LsEntries} array containing the list of file paths,
@@ -30,22 +30,23 @@ export declare type LsEntries = Array<string>;
 export declare type LsResult = LsEntries | null;
 
 /**
- * An enum representing different file types.
- * @since 0.1.0
- * @see {@link lsfnd!~lsTypes lsfnd.lsTypes}
- * @see {@link LsTypes}
+ * A combination union types containing all possible values used to specify the
+ *  returned results on {@link !lsfnd~ls ls} function.
+ * @since 1.0.0
  */
-export declare const lsTypes: LsTypes;
+export declare type LsTypes = LsTypesKeys | LsTypesValues;
+
 /**
  * Type representing all possible keys of the {@link lsTypes} enum.
  * @since 0.1.0
- * @see {@link LsTypes}
+ * @see {@link LsTypesInterface}
  */
-export declare type LsTypesKeys = keyof LsTypes;
+export declare type LsTypesKeys = keyof LsTypesInterface;
+
 /**
  * Type representing all possible values of the {@link lsTypes} enum.
  * @since 0.1.0
- * @see {@link LsTypes}
+ * @see {@link LsTypesInterface}
  */
 export declare type LsTypesValues =
   | 0b00   // 0 (interpreted the same as LS_A | 1)
@@ -60,7 +61,7 @@ export declare type LsTypesValues =
  * @interface
  * @since 0.1.0
  */
-export declare interface LsTypes {
+export declare interface LsTypesInterface {
   /**
    * Represents an option to include all file types.
    * @defaultValue `0b01 << 0b00` (`0b01` | `0o01` | `0x01` | `1`)
@@ -87,12 +88,12 @@ export declare interface LsTypes {
 export declare interface LsOptions {
   /**
    * Specifies the character encoding to be used when reading a directory. 
-   * @defaultValue Defaults to `'utf8'` if not provided.
+   * @defaultValue `'utf8'`
    */
   encoding?: BufferEncoding | undefined,
   /**
    * A boolean flag indicating whether to include subdirectories in the listing. 
-   * @defaultValue Defaults to `false` if not provided.
+   * @defaultValue `false`
    */
   recursive?: boolean | undefined,
   /**
@@ -112,17 +113,33 @@ export declare interface LsOptions {
 
 // ====== APIs ===== //
 
+/**
+ * {@inheritDoc !lsTypes~lsTypes}
+ *
+ * @see For more details, refer to {@link !lsTypes~lsTypes lsTypes} enum documentation.
+ */
+export declare const lsTypes: Record<
+  LsTypesKeys,
+  LsTypesValues
+> & Record<
+  LsTypesValues,
+  LsTypesKeys
+>;
+
+/** {@inheritDoc !lsfnd~ls} */
 export declare function ls(
   dirpath: string | URL,
   options?: LsOptions | RegExp | undefined,
-  type?: LsTypes | LsTypesKeys | LsTypesValues | undefined
+  type?: LsTypes | undefined
 ): Promise<LsResult>
 
+/** {@inheritDoc !lsfnd~lsFiles} */
 export declare function lsFiles(
   dirpath: string | URL,
   options?: LsOptions | RegExp | undefined
 ): Promise<LsResult>
 
+/** {@inheritDoc !lsfnd~lsDirs} */
 export declare function lsDirs(
   dirpath: string | URL,
   options?: LsOptions | RegExp | undefined

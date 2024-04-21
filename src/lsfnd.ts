@@ -19,8 +19,7 @@ import type {
   LsEntries,
   LsResult,
   LsOptions,
-  LsTypesKeys,
-  LsTypesValues
+  LsTypes
 } from '../types';
 
 type Unpack<A> = A extends Array<(infer U)> ? U : A;
@@ -82,7 +81,7 @@ function fileUrlToPath(url: URL | string): string {
  * @internal
  */
 function checkType<N extends null | undefined>(
-  type: lsTypes | LsTypesKeys | LsTypesValues | N,
+  type: LsTypes | N,
   validTypes: Array<(string | number | N)>
 ): void {
   function joinAll(arr: (typeof validTypes), delim: string): string {
@@ -186,11 +185,7 @@ function checkType<N extends null | undefined>(
 export async function ls(
   dirpath: string | URL,
   options?: LsOptions | RegExp | undefined,
-  type?:
-    | lsTypes
-    | LsTypesKeys
-    | LsTypesValues
-    | undefined
+  type?: LsTypes | undefined
 ): Promise<LsResult> {
   let absdirpath: string;
   let match: string | RegExp,
@@ -355,7 +350,7 @@ export async function ls(
  */
 export async function lsFiles(
   dirpath: string | URL,
-  options?: LsOptions | RegExp
+  options?: LsOptions | RegExp | undefined
 ): Promise<LsResult> {
   return ls(dirpath, options, lsTypes.LS_F);
 }
@@ -426,7 +421,7 @@ export async function lsFiles(
  */
 export async function lsDirs(
   dirpath: string | URL,
-  options?: LsOptions | RegExp
+  options?: LsOptions | RegExp | undefined
 ): Promise<LsResult> {
   return ls(dirpath, options, lsTypes.LS_D);
 }

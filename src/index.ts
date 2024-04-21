@@ -10,3 +10,12 @@
 
 export * from './lsTypes';
 export * from './lsfnd';
+export type {
+  LsTypes,
+  LsTypesInterface,
+  LsTypesKeys,
+  LsTypesValues,
+  LsOptions,
+  LsEntries,
+  LsResult
+} from '../types';
