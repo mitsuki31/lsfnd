@@ -17,8 +17,7 @@
  * npx ts-node scripts/build.ts [-ow|--overwrite] [-m|--minify]
  * ```
  *
- * Copyright (c) 2024 Ryuu Mitsuki.
- * Licensed under the MIT license.
+ * Copyright (c) 2024 Ryuu Mitsuki. All rights reserved.
  *
  * @module  scripts/build
  * @author  Ryuu Mitsuki (https://github.com/mitsuki31)
@@ -62,6 +61,7 @@ const legalComments: string = `
  * Copyright (c) ${new Date().getFullYear()} Ryuu Mitsuki. All rights reserved.
  * @author Ryuu Mitsuki (https://github.com/mitsuki31)
  * @license ${pkg.license}
+ * @see [Homepage](${pkg.homepage})
  * @see [Source code](${pkg.repository.url.replace(/^git\+/, '')})
  */
 `.trimStart();
