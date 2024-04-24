@@ -111,13 +111,25 @@ function checkType<N extends null | undefined>(
   validTypes.forEach((validType: Unpack<(typeof validTypes)>) => {
     if (!match && type === validType) match = true;
   });
+
   if (!match) {
     throw new TypeError(
-      `Invalid 'type' value of ${type} ('${typeof type}'). Valid type is "${
+      `Invalid 'type' value of ${<string> type} ('${typeof type}'). Valid type is "${
         joinAll(validTypes.sort(), ' | ')
       }"`);
   }
   return;
+}
+
+function resolveOptions(options: LsOptions | null | undefined): ResolvedLsOptions {
+  return <ReturnType<(typeof resolveOptions)>> (!options ? defaultLsOptions : {
+    encoding: options?.encoding || defaultLsOptions.encoding,
+    recursive: options?.recursive || defaultLsOptions.recursive,
+    match: options?.match || defaultLsOptions.match,
+    exclude: options?.exclude || defaultLsOptions.exclude,
+    rootDir: options?.rootDir || defaultLsOptions.rootDir,
+    basename: options?.basename || defaultLsOptions.basename
+  });
 }
 
 /**
@@ -199,8 +211,6 @@ export async function ls(
   options?: LsOptions | RegExp | undefined,
   type?: LsTypes | undefined
 ): Promise<LsResult> {
-  let match: string | RegExp,
-      exclude: string | RegExp | undefined;
   let absdirpath: StringPath;
 
   if (dirpath instanceof URL) {
@@ -216,7 +226,7 @@ export async function ls(
       dirpath = fileUrlToPath(dirpath);
     }
   } else {
-    throw new Error('Unknown type, expected a string or an URL object');
+    throw new TypeError('Unknown type, expected a string or an URL object');
   }
 
   // Resolve its absolute path
@@ -225,21 +235,15 @@ export async function ls(
     : path.posix.resolve(<StringPath> dirpath);
 
   if (isRegExp(options)) {
-    match = options;
-    exclude = undefined;
-    options = { encoding: 'utf8', recursive: false };
-  } else if (typeof options === 'undefined' || options === null) {
-    options = { encoding: 'utf8', recursive: false };
-    match = /.+/;
-  } else if (options && typeof options === 'object' && !Array.isArray(options)) {
-    match = (typeof options!.match === 'string')
-      ? new RegExp(options!.match)
-      : (isRegExp(options!.match) ? options!.match : /.+/);
-    exclude = (typeof options!.exclude === 'string')
-      ? new RegExp(options!.exclude)
-      : (isRegExp(options!.exclude) ? options!.exclude : undefined);
+    // Store the regex value of `options` to temporary variable for `match` option
+    const temp: RegExp = new RegExp(options.source) || options;
+    options = <LsOptions> resolveOptions(null);  // Use the default options
+    (<LsOptions> options)!.match = temp;  // Reassign the `match` field
+  } else if (!options || (typeof options === 'object' && !Array.isArray(options))) {
+    // Resolve the options, even it is not specified
+    options = <LsOptions> resolveOptions(<Omit<(typeof options), 'RegExp'>> options);
   } else {
-    throw new TypeError('Unknown type of "options": '
+    throw new TypeError("Unknown type of 'options': "
       + (Array.isArray(options) ? 'array' : typeof options));
   }
 
@@ -275,8 +279,8 @@ export async function ls(
 
         return (
           resultType && (
-            (<RegExp> match).test(entry)
-              && (exclude ? !(<RegExp> exclude).test(entry) : true)
+            (<RegExp> options.match).test(entry)
+              && (options.exclude ? !(<RegExp> options.exclude).test(entry) : true)
           )
         ) ? entry : null;
       })
