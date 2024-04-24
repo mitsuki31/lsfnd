@@ -16,13 +16,25 @@ import { isRegExp } from 'node:util';
 import { URL } from 'node:url';
 import { lsTypes }  from './lsTypes';
 import type {
+  StringPath,
   LsEntries,
   LsResult,
   LsOptions,
+  ResolvedLsOptions,
+  DefaultLsOptions,
   LsTypes
 } from '../types';
 
 type Unpack<A> = A extends Array<(infer U)> ? U : A;
+
+export const defaultLsOptions: DefaultLsOptions = {
+  encoding: 'utf8',
+  recursive: false,
+  match: /.+/,
+  exclude: undefined,
+  rootDir: process.cwd(),
+  basename: false
+} as const;
 
 /**
  * Converts a file URL to a file path.
@@ -56,7 +68,7 @@ type Unpack<A> = A extends Array<(infer U)> ? U : A;
  *
  * @internal
  */
-function fileUrlToPath(url: URL | string): string {
+function fileUrlToPath(url: URL | StringPath): StringPath {
   if ((url instanceof URL && url.protocol !== 'file:')
       || (typeof url === 'string' && !/^file:(\/\/?|\.\.?\/*)/.test(url))) {
     throw new URIError('Invalid URL file scheme');
@@ -183,13 +195,13 @@ function checkType<N extends null | undefined>(
  * @see {@link https://nodejs.org/api/fs.html#fsreaddirpath-options-callback fs.readdir}
  */
 export async function ls(
-  dirpath: string | URL,
+  dirpath: StringPath | URL,
   options?: LsOptions | RegExp | undefined,
   type?: LsTypes | undefined
 ): Promise<LsResult> {
-  let absdirpath: string;
   let match: string | RegExp,
       exclude: string | RegExp | undefined;
+  let absdirpath: StringPath;
 
   if (dirpath instanceof URL) {
     if (dirpath.protocol !== 'file:') {
@@ -208,9 +220,9 @@ export async function ls(
   }
 
   // Resolve its absolute path
-  absdirpath = path.isAbsolute(<string> dirpath)
-    ? <string> dirpath
-    : path.posix.resolve(<string> dirpath);
+  absdirpath = path.isAbsolute(<StringPath> dirpath)
+    ? <StringPath> dirpath
+    : path.posix.resolve(<StringPath> dirpath);
 
   if (isRegExp(options)) {
     match = options;
@@ -244,8 +256,8 @@ export async function ls(
 
     // Filter the entries
     result = await Promise.all(
-      entries.map(async function (entry: string): Promise<(string | null)> {
-        entry = path.join(<string> dirpath, entry);
+      entries.map(async function (entry: StringPath): Promise<(StringPath | null)> {
+        entry = path.join(<StringPath> dirpath, entry);
         const stats: fs.Stats = await fs.promises.stat(entry);
         let resultType: boolean = false;
 
@@ -268,7 +280,7 @@ export async function ls(
           )
         ) ? entry : null;
       })
-    ).then(function (results: Array<string | null>): LsEntries {
+    ).then(function (results: (Unpack<LsEntries> | null)[]): LsEntries {
       return <LsEntries> results.filter(
         function (entry: Unpack<(typeof results)>): boolean {
           // Remove any null entries
@@ -349,7 +361,7 @@ export async function ls(
  * @see {@link https://nodejs.org/api/fs.html#fsreaddirpath-options-callback fs.readdir}
  */
 export async function lsFiles(
-  dirpath: string | URL,
+  dirpath: StringPath | URL,
   options?: LsOptions | RegExp | undefined
 ): Promise<LsResult> {
   return ls(dirpath, options, lsTypes.LS_F);
@@ -420,7 +432,7 @@ export async function lsFiles(
  * @see {@link https://nodejs.org/api/fs.html#fsreaddirpath-options-callback fs.readdir}
  */
 export async function lsDirs(
-  dirpath: string | URL,
+  dirpath: StringPath | URL,
   options?: LsOptions | RegExp | undefined
 ): Promise<LsResult> {
   return ls(dirpath, options, lsTypes.LS_D);
