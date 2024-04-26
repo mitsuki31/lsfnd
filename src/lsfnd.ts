@@ -33,6 +33,7 @@ export const defaultLsOptions: DefaultLsOptions = {
   match: /.+/,
   exclude: undefined,
   rootDir: process.cwd(),
+  absolute: false,
   basename: false
 } as const;
 
@@ -128,6 +129,7 @@ function resolveOptions(options: LsOptions | null | undefined): ResolvedLsOption
     match: options?.match || defaultLsOptions.match,
     exclude: options?.exclude || defaultLsOptions.exclude,
     rootDir: options?.rootDir || defaultLsOptions.rootDir,
+    absolute: options?.absolute || defaultLsOptions.absolute,
     basename: options?.basename || defaultLsOptions.basename
   });
 }
@@ -211,7 +213,8 @@ export async function ls(
   options?: LsOptions | RegExp | undefined,
   type?: LsTypes | undefined
 ): Promise<LsResult> {
-  let absdirpath: StringPath;
+  let absdirpath: StringPath,
+      reldirpath: StringPath;
 
   if (dirpath instanceof URL) {
     if (dirpath.protocol !== 'file:') {
@@ -229,11 +232,6 @@ export async function ls(
     throw new TypeError('Unknown type, expected a string or an URL object');
   }
 
-  // Resolve its absolute path
-  absdirpath = path.isAbsolute(<StringPath> dirpath)
-    ? <StringPath> dirpath
-    : path.posix.resolve(<StringPath> dirpath);
-
   if (isRegExp(options)) {
     // Store the regex value of `options` to temporary variable for `match` option
     const temp: RegExp = new RegExp(options.source) || options;
@@ -241,11 +239,17 @@ export async function ls(
     (<LsOptions> options)!.match = temp;  // Reassign the `match` field
   } else if (!options || (typeof options === 'object' && !Array.isArray(options))) {
     // Resolve the options, even it is not specified
-    options = <LsOptions> resolveOptions(<Omit<(typeof options), 'RegExp'>> options);
+    options = <LsOptions> resolveOptions(options);
   } else {
     throw new TypeError("Unknown type of 'options': "
       + (Array.isArray(options) ? 'array' : typeof options));
   }
+
+  // Resolve its absolute and relative path
+  absdirpath = path.isAbsolute(<StringPath> dirpath)
+    ? <StringPath> dirpath
+    : path.posix.resolve(<StringPath> dirpath);
+  reldirpath = path.relative(options.rootDir! || process.cwd(), absdirpath);;
 
   // Check the type argument
   checkType(type!, [ ...Object.values(lsTypes), 0, null, undefined ]);
@@ -261,7 +265,7 @@ export async function ls(
     // Filter the entries
     result = await Promise.all(
       entries.map(async function (entry: StringPath): Promise<(StringPath | null)> {
-        entry = path.join(<StringPath> dirpath, entry);
+        entry = path.join(absdirpath, entry);
         const stats: fs.Stats = await fs.promises.stat(entry);
         let resultType: boolean = false;
 
@@ -277,18 +281,30 @@ export async function ls(
           default: resultType = (stats.isFile() || stats.isDirectory());
         }
 
-        return (
+        return ((
           resultType && (
             (<RegExp> options.match).test(entry)
               && (options.exclude ? !(<RegExp> options.exclude).test(entry) : true)
           )
-        ) ? entry : null;
+        )
+          ? (
+            // *** High priority
+            (options.absolute && (options.basename || !options.basename))
+                ? entry  // already an absolute path
+                // *** Medium priority
+                : (!options.absolute && options.basename)
+                  ? path.basename(entry)  // get its basename
+                  // *** Low priority
+                  // convert back to the relative path
+                  : path.join(reldirpath, path.relative(absdirpath, entry))
+          )
+          : null
+        )
       })
     ).then(function (results: (Unpack<LsEntries> | null)[]): LsEntries {
       return <LsEntries> results.filter(
         function (entry: Unpack<(typeof results)>): boolean {
-          // Remove any null entries
-          return !!entry!;
+          return !!entry!;  // Remove any null entries
         }
       );
     });

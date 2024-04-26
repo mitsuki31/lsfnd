@@ -85,7 +85,8 @@ export declare interface LsTypesInterface {
 
 /**
  * This interface defines the optional configuration options that can be passed
- * to the `ls*` function. These options control the behavior of the file listing.
+ * to every `ls*` functions. These options control the behavior of the directory listing.
+ *
  * @interface
  * @since 0.1.0
  */
@@ -93,17 +94,20 @@ export declare interface LsOptions {
   /**
    * Specifies the character encoding to be used when reading a directory. 
    * @defaultValue `'utf8'`
+   * @since        0.1.0
    */
   encoding?: BufferEncoding | undefined;
   /**
    * A boolean flag indicating whether to include subdirectories in the listing. 
    * @defaultValue `false`
+   * @since        0.1.0
    */
   recursive?: boolean | undefined;
   /**
    * A regular expression or string pattern used to filter the listed entries. 
    * Only entries matching the pattern will be included in the results.
    * @defaultValue `/.+/` (match all files)
+   * @since        0.1.0
    */
   match?: RegExp | string | undefined;
   /**
@@ -111,8 +115,108 @@ export declare interface LsOptions {
    * listing. Any entries matching this pattern will be filtered out of the 
    * results, even if they match the {@link match} pattern.
    * @defaultValue `undefined`
+   * @since        0.1.0
    */
   exclude?: RegExp | string | undefined;
+  /**
+   * A string path representing the root directory to resolve the results to
+   * relative paths.
+   *
+   * This option will be ignored if either one of the {@link absolute `absolute`}
+   * or {@link basename `basename`} option are enabled, this is due to their
+   * higher priority. This option have the lowest priority when compared with those
+   * options.
+   *
+   * @defaultValue `'.'` or `process.cwd()`
+   * @since        1.0.0
+   */
+  rootDir?: StringPath | undefined;
+  /**
+   * Determines whether to return absolute paths for all entries.
+   *
+   * When enabled (i.e., set to `true`), each entry of the returned results
+   * will be an absolute path. Otherwise, paths will be relative to the directory
+   * specified in the {@link rootDir `rootDir`} field.
+   *
+   * Enabling this option are equivalent with the following code.
+   * Let's assume we want to list all files within a directory named `'foo'`:
+   *
+   * ```js
+   * const { resolve } = require('node:path');
+   * const { lsFiles } = require('lsfnd');
+   * // Or ESM:
+   * // import { resolve } from 'node:path';
+   * // import { lsFiles } from 'lsfnd';
+   *
+   * const absfiles = (await lsFiles('foo/')).map((entry) => resolve(entry));
+   * ```
+   *
+   * In previous release (prior to version 0.1.0) you can literally use an
+   * explicit method that makes the returned results as absolute paths entirely.
+   * That is by utilizing the `path.resolve` function, here is an example:
+   *
+   * ```js
+   * const absfiles = await lsFiles(path.resolve('foo/'));
+   * ```
+   *
+   * In the above code, the directory path is resolved to an absolute path before
+   * being passed to the {@link !lsfnd~lsFiles `lsFiles`} function. As a result,
+   * the function treats the specified directory path as a relative path and
+   * does not attempt to resolve it back to a relative path, thus returning
+   * absolute paths. This approach was considered unstable and problematic due
+   * to inconsistencies in the internal logic. Therefore, this option was
+   * introduced as a replacement and will default returns relative paths when
+   * this option are disabled (set to `false` or unspecified), they will relative
+   * to the path specified in the {@link rootDir `rootDir`} field. Refer to
+   * {@link rootDir `rootDir`} option for more details.
+   *
+   * @defaultValue `false`
+   * @since        1.0.0
+   * @see          {@link rootDir}
+   */
+  absolute?: boolean | undefined;
+  /**
+   * Whether to make the returned result paths only have their basenames, trimming any
+   * directories behind the path separator (i.e., `\\` in Windows, and `/` in POSIX).
+   *
+   * When set to `true`, the returned paths will only include the file and/or
+   * directory names itself. This can be useful if you need only the names while
+   * listing a directory.
+   *
+   * If you enabled both this option and the {@link absolute `absolute`} option,
+   * the `absolute` option will be treated instead due to its higher priority rather
+   * than this option's priority.
+   *
+   * > ### Note  
+   * > Please note, that this option implicitly includes any directories on the
+   * > returned entries. If you want to only include the filenames, then
+   * > combine this option with {@link !lsTypes~lsTypes.LS_F `LS_F`} type if you
+   * > are using {@link !lsfnd~ls `ls`} function, or use this option with
+   * > {@link !lsfnd~lsFiles `lsFiles`} function for better flexibility.
+   *
+   * This option achieves the same functionality as the following code:
+   *
+   * ```js
+   * const path = require('node:path');
+   * // Or ESM:
+   * // import * as path from 'node:path';
+   *
+   * // Assume you have `results` variable contains all files paths
+   * // from listing a directory using `lsFiles` function
+   * const baseResults = results.map((res) => res.split(path.sep).pop());
+   * ```
+   *
+   * Or even a bit more simple like this:
+   * ```js
+   * // ...
+   * const baseResults = results.map((res) => path.basename(res));
+   * ```
+   *
+   * @defaultValue `false`
+   * @since        1.0.0
+   * @see          {@link rootDir}
+   */
+  basename?: boolean | undefined;
 }
 
 /**
@@ -141,12 +245,13 @@ export declare type ResolvedLsOptions = {
  * @see       {@link !lsfnd~defaultLsOptions defaultLsOptions}
  */
 export declare interface DefaultLsOptions {
-  encoding: 'utf8';
-  recursive: false;
-  match: RegExp;
-  exclude: undefined;
-  rootDir: StringPath;
-  basename: false;
+  readonly encoding: 'utf8';
+  readonly recursive: false;
+  readonly match: RegExp;
+  readonly exclude: undefined;
+  readonly rootDir: StringPath;
+  readonly absolute: false;
+  readonly basename: false;
 }
 
 // ====== APIs ===== //
