@@ -245,7 +245,14 @@ export async function ls(
       + (Array.isArray(options) ? 'array' : typeof options));
   }
 
-  // Resolve its absolute and relative path
+  // Check and resolve the `rootDir` option
+  if (options.rootDir && (options.rootDir instanceof URL
+      || (typeof options.rootDir === 'string' && /^[a-zA-Z]+:/.test(options.rootDir))
+  )) {
+    options.rootDir = fileUrlToPath(options.rootDir);
+  }
+
+  // Resolve the absolute and relative of the dirpath argument
   absdirpath = path.isAbsolute(<StringPath> dirpath)
     ? <StringPath> dirpath
     : path.posix.resolve(<StringPath> dirpath);

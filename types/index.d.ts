@@ -130,7 +130,7 @@ export declare interface LsOptions {
    * @defaultValue `'.'` or `process.cwd()`
    * @since        1.0.0
    */
-  rootDir?: StringPath | undefined;
+  rootDir?: StringPath | URL | undefined;
   /**
    * Determines whether to return absolute paths for all entries.
    *
@@ -249,7 +249,7 @@ export declare interface DefaultLsOptions {
   readonly recursive: false;
   readonly match: RegExp;
   readonly exclude: undefined;
-  readonly rootDir: StringPath;
+  readonly rootDir: StringPath | URL;
   readonly absolute: false;
   readonly basename: false;
 }
