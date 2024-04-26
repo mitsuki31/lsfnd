@@ -11,11 +11,14 @@
 export * from './lsTypes';
 export * from './lsfnd';
 export type {
+  StringPath,
   LsTypes,
   LsTypesInterface,
   LsTypesKeys,
   LsTypesValues,
   LsOptions,
+  ResolvedLsOptions,
+  DefaultLsOptions,
   LsEntries,
   LsResult
 } from '../types';

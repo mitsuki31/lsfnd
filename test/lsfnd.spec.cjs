@@ -14,21 +14,21 @@ const rootDirPosix = path.posix.resolve('..');
 console.log(`\n\x1b[1m${path.basename(__filename)}:\x1b[0m`);
 
 it('test `ls` function by listing this file directory', async () => {
-  const results = await ls(__dirname, {}, 0);
+  const results = await ls(__dirname, { absolute: true }, 0);
   const expected = [ 'lib', 'lsfnd.spec.cjs', 'lsfnd.spec.mjs' ]
     .map((e) => path.join(__dirname, e));
   deepEq(results, expected);
 }, false);
 
 it('test `lsFiles` function by listing this file directory', async () => {
-  const results = await lsFiles(__dirname);
+  const results = await lsFiles(__dirname, { absolute: true });
   const expected = [ 'lsfnd.spec.cjs', 'lsfnd.spec.mjs' ]
     .map((e) => path.join(__dirname, e));
   deepEq(results, expected);
 }, false);
 
 it('test `lsDirs` function by listing this file directory', async () => {
-  const results = await lsDirs(__dirname);
+  const results = await lsDirs(__dirname, { absolute: true });
   const expected = [ 'lib' ].map((e) => path.join(__dirname, e));
   deepEq(results, expected);
 }, false);

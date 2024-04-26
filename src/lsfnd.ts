@@ -16,13 +16,33 @@ import { isRegExp } from 'node:util';
 import { URL } from 'node:url';
 import { lsTypes }  from './lsTypes';
 import type {
+  StringPath,
   LsEntries,
   LsResult,
   LsOptions,
+  ResolvedLsOptions,
+  DefaultLsOptions,
   LsTypes
 } from '../types';
 
 type Unpack<A> = A extends Array<(infer U)> ? U : A;
+
+/**
+ * An object containing all default values of {@link LsOptions `LsOptions`} type.
+ *
+ * @since 1.0.0
+ * @see   {@link DefaultLsOptions}
+ * @see   {@link LsOptions}
+ */
+export const defaultLsOptions: DefaultLsOptions = {
+  encoding: 'utf8',
+  recursive: false,
+  match: /.+/,
+  exclude: undefined,
+  rootDir: process.cwd(),
+  absolute: false,
+  basename: false
+} as const;
 
 /**
  * Converts a file URL to a file path.
@@ -56,7 +76,7 @@ type Unpack<A> = A extends Array<(infer U)> ? U : A;
  *
  * @internal
  */
-function fileUrlToPath(url: URL | string): string {
+function fileUrlToPath(url: URL | StringPath): StringPath {
   if ((url instanceof URL && url.protocol !== 'file:')
       || (typeof url === 'string' && !/^file:(\/\/?|\.\.?\/*)/.test(url))) {
     throw new URIError('Invalid URL file scheme');
@@ -99,13 +119,37 @@ function checkType<N extends null | undefined>(
   validTypes.forEach((validType: Unpack<(typeof validTypes)>) => {
     if (!match && type === validType) match = true;
   });
+
   if (!match) {
     throw new TypeError(
-      `Invalid 'type' value of ${type} ('${typeof type}'). Valid type is "${
+      `Invalid 'type' value of ${<string> type} ('${typeof type}'). Valid type is "${
         joinAll(validTypes.sort(), ' | ')
       }"`);
   }
   return;
+}
+
+/**
+ * Resolves the given `options` ({@link LsOptions}).
+ *
+ * @param options - An object represents the options to be resolved. Set to `null`
+ *                  or `undefined` to gets the default options.
+ * @returns A new object represents the resolved options. Returns the default
+ *          options if the `options` parameter not specified or `null`.
+ *
+ * @since 1.0.0
+ * @internal
+ */
+function resolveOptions(options: LsOptions | null | undefined): ResolvedLsOptions {
+  return <ReturnType<(typeof resolveOptions)>> (!options ? defaultLsOptions : {
+    encoding: options?.encoding || defaultLsOptions.encoding,
+    recursive: options?.recursive || defaultLsOptions.recursive,
+    match: options?.match || defaultLsOptions.match,
+    exclude: options?.exclude || defaultLsOptions.exclude,
+    rootDir: options?.rootDir || defaultLsOptions.rootDir,
+    absolute: options?.absolute || defaultLsOptions.absolute,
+    basename: options?.basename || defaultLsOptions.basename
+  });
 }
 
 /**
@@ -183,13 +227,12 @@ function checkType<N extends null | undefined>(
  * @see {@link https://nodejs.org/api/fs.html#fsreaddirpath-options-callback fs.readdir}
  */
 export async function ls(
-  dirpath: string | URL,
+  dirpath: StringPath | URL,
   options?: LsOptions | RegExp | undefined,
   type?: LsTypes | undefined
 ): Promise<LsResult> {
-  let absdirpath: string;
-  let match: string | RegExp,
-      exclude: string | RegExp | undefined;
+  let absdirpath: StringPath,
+      reldirpath: StringPath;
 
   if (dirpath instanceof URL) {
     if (dirpath.protocol !== 'file:') {
@@ -204,32 +247,34 @@ export async function ls(
       dirpath = fileUrlToPath(dirpath);
     }
   } else {
-    throw new Error('Unknown type, expected a string or an URL object');
+    throw new TypeError('Unknown type, expected a string or an URL object');
   }
-
-  // Resolve its absolute path
-  absdirpath = path.isAbsolute(<string> dirpath)
-    ? <string> dirpath
-    : path.posix.resolve(<string> dirpath);
 
   if (isRegExp(options)) {
-    match = options;
-    exclude = undefined;
-    options = { encoding: 'utf8', recursive: false };
-  } else if (typeof options === 'undefined' || options === null) {
-    options = { encoding: 'utf8', recursive: false };
-    match = /.+/;
-  } else if (options && typeof options === 'object' && !Array.isArray(options)) {
-    match = (typeof options!.match === 'string')
-      ? new RegExp(options!.match)
-      : (isRegExp(options!.match) ? options!.match : /.+/);
-    exclude = (typeof options!.exclude === 'string')
-      ? new RegExp(options!.exclude)
-      : (isRegExp(options!.exclude) ? options!.exclude : undefined);
+    // Store the regex value of `options` to temporary variable for `match` option
+    const temp: RegExp = new RegExp(options.source) || options;
+    options = <LsOptions> resolveOptions(null);  // Use the default options
+    (<LsOptions> options)!.match = temp;  // Reassign the `match` field
+  } else if (!options || (typeof options === 'object' && !Array.isArray(options))) {
+    // Resolve the options, even it is not specified
+    options = <LsOptions> resolveOptions(options);
   } else {
-    throw new TypeError('Unknown type of "options": '
+    throw new TypeError("Unknown type of 'options': "
       + (Array.isArray(options) ? 'array' : typeof options));
   }
+
+  // Check and resolve the `rootDir` option
+  if (options.rootDir && (options.rootDir instanceof URL
+      || (typeof options.rootDir === 'string' && /^[a-zA-Z]+:/.test(options.rootDir))
+  )) {
+    options.rootDir = fileUrlToPath(options.rootDir);
+  }
+
+  // Resolve the absolute and relative of the dirpath argument
+  absdirpath = path.isAbsolute(<StringPath> dirpath)
+    ? <StringPath> dirpath
+    : path.posix.resolve(<StringPath> dirpath);
+  reldirpath = path.relative(options.rootDir! || process.cwd(), absdirpath);;
 
   // Check the type argument
   checkType(type!, [ ...Object.values(lsTypes), 0, null, undefined ]);
@@ -244,8 +289,8 @@ export async function ls(
 
     // Filter the entries
     result = await Promise.all(
-      entries.map(async function (entry: string): Promise<(string | null)> {
-        entry = path.join(<string> dirpath, entry);
+      entries.map(async function (entry: StringPath): Promise<(StringPath | null)> {
+        entry = path.join(absdirpath, entry);
         const stats: fs.Stats = await fs.promises.stat(entry);
         let resultType: boolean = false;
 
@@ -261,18 +306,30 @@ export async function ls(
           default: resultType = (stats.isFile() || stats.isDirectory());
         }
 
-        return (
+        return ((
           resultType && (
-            (<RegExp> match).test(entry)
-              && (exclude ? !(<RegExp> exclude).test(entry) : true)
+            (<RegExp> options.match).test(entry)
+              && (options.exclude ? !(<RegExp> options.exclude).test(entry) : true)
           )
-        ) ? entry : null;
+        )
+          ? (
+            // *** High priority
+            (options.absolute && (options.basename || !options.basename))
+                ? entry  // already an absolute path
+                // *** Medium priority
+                : (!options.absolute && options.basename)
+                  ? path.basename(entry)  // get its basename
+                  // *** Low priority
+                  // convert back to the relative path
+                  : path.join(reldirpath, path.relative(absdirpath, entry))
+          )
+          : null
+        )
       })
-    ).then(function (results: Array<string | null>): LsEntries {
+    ).then(function (results: (Unpack<LsEntries> | null)[]): LsEntries {
       return <LsEntries> results.filter(
         function (entry: Unpack<(typeof results)>): boolean {
-          // Remove any null entries
-          return !!entry!;
+          return !!entry!;  // Remove any null entries
         }
       );
     });
@@ -349,7 +406,7 @@ export async function ls(
  * @see {@link https://nodejs.org/api/fs.html#fsreaddirpath-options-callback fs.readdir}
  */
 export async function lsFiles(
-  dirpath: string | URL,
+  dirpath: StringPath | URL,
   options?: LsOptions | RegExp | undefined
 ): Promise<LsResult> {
   return ls(dirpath, options, lsTypes.LS_F);
@@ -420,7 +477,7 @@ export async function lsFiles(
  * @see {@link https://nodejs.org/api/fs.html#fsreaddirpath-options-callback fs.readdir}
  */
 export async function lsDirs(
-  dirpath: string | URL,
+  dirpath: StringPath | URL,
   options?: LsOptions | RegExp | undefined
 ): Promise<LsResult> {
   return ls(dirpath, options, lsTypes.LS_D);
