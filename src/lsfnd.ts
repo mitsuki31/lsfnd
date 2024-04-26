@@ -27,6 +27,13 @@ import type {
 
 type Unpack<A> = A extends Array<(infer U)> ? U : A;
 
+/**
+ * An object containing all default values of {@link LsOptions `LsOptions`} type.
+ *
+ * @since 1.0.0
+ * @see   {@link DefaultLsOptions}
+ * @see   {@link LsOptions}
+ */
 export const defaultLsOptions: DefaultLsOptions = {
   encoding: 'utf8',
   recursive: false,
@@ -122,6 +129,17 @@ function checkType<N extends null | undefined>(
   return;
 }
 
+/**
+ * Resolves the given `options` ({@link LsOptions}).
+ *
+ * @param options - An object represents the options to be resolved. Set to `null`
+ *                  or `undefined` to gets the default options.
+ * @returns A new object represents the resolved options. Returns the default
+ *          options if the `options` parameter not specified or `null`.
+ *
+ * @since 1.0.0
+ * @internal
+ */
 function resolveOptions(options: LsOptions | null | undefined): ResolvedLsOptions {
   return <ReturnType<(typeof resolveOptions)>> (!options ? defaultLsOptions : {
     encoding: options?.encoding || defaultLsOptions.encoding,
