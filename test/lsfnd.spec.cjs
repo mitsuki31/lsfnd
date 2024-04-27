@@ -49,6 +49,15 @@ it('test if the type argument accepts a string value', async () => {
   await doesNotReject(ls(__dirname, {}, 'LS_D'), TypeError);
 }, false);
 
+it("list this file directory with 'base64' encoding", async () => {
+  const results = await ls(__dirname, { rootDir: __dirname, encoding: 'base64' });
+  const expected = [ 'lib', 'lsfnd.spec.cjs', 'lsfnd.spec.mjs' ]
+    .map((e) => Buffer.from(e, 'utf8').toString('base64'));
+  deepEq(results, expected);
+}, false);
+
+// --- [ ERROR TESTS ] --- //
+
 it('throws an error if the given directory path not exist', async () => {
   await rejects(ls('./this/is/not/exist/directory/path'), Error);
 }, false);
@@ -65,3 +74,8 @@ it('throws a `TypeError` if the given type is an unexpected value',
   },
   false
 );
+
+it('throws an error if the given encoding option is unknown', async () => {
+  await rejects(lsFiles(__dirname, { encoding: 'NotDefinedEncoding' }), TypeError);
+  await rejects(lsFiles(__dirname, { encoding: true }), TypeError);
+});
