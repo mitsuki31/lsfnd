@@ -153,6 +153,79 @@ function resolveOptions(options: LsOptions | null | undefined): ResolvedLsOption
 }
 
 /**
+ * Encodes a string or an array of strings from one encoding to another.
+ * 
+ * This function offers simplicity and flexibility by allowing encoding conversion
+ * between different encodings for either a string or a set of strings.
+ *
+ * @param val - The string to encode.
+ * @param from - The encoding of the input string.
+ * @param to - The encoding to convert the string to.
+ * 
+ * @returns The encoded string.
+ *
+ * @throws {@link https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/TypeError **TypeError**} -
+ *         If the `from` or `to` encoding is unknown, or if the input value is
+ *         neither a string nor an array of strings.
+ * 
+ * @example
+ * Encode a string to 'base64' encoding:
+ * ```js
+ * const encodedString = encodeTo('Hello, world!', 'utf8', 'base64');
+ * console.log(encodedString);
+ * // Output: 'SGVsbG8sIHdvcmxkIQ=='
+ * ```
+ *
+ * Encode an array of strings to 'hex' encoding:
+ * ```js
+ * const encodedArray = encodeTo(['Hello', 'world'], 'utf8', 'hex');
+ * console.log(encodedArray);
+ * // Output: ['48656c6c6f', '776f726c64']
+ * ```
+ *
+ * @since 1.0.0
+ * @internal
+ */
+function encodeTo(
+  val: string,
+  from: BufferEncoding,
+  to: BufferEncoding
+): string;
+/**
+ * @param val - The array of strings to encode.
+ * @param from - The encoding of the input strings.
+ * @param to - The encoding to convert the strings to.
+ * 
+ * @returns The array of encoded strings.
+ */
+function encodeTo(
+  val: Array<string>,
+  from: BufferEncoding,
+  to: BufferEncoding
+): Array<string>;
+
+function encodeTo(
+  val: string | Array<string>,
+  from: BufferEncoding,
+  to: BufferEncoding
+): string | Array<string> {
+  const { isEncoding } = Buffer;
+  if (!isEncoding(from)) throw new TypeError("Unknown 'from' encoding: " + from);
+  else if (!isEncoding(to)) throw new TypeError("Unknown 'to' encoding: " + to);
+  else if (!(typeof val === 'string' || Array.isArray(val))) {
+    throw new TypeError('Expected a string or an array of string');
+  }
+
+  if (typeof val === 'string') {
+    return Buffer.from(val, from).toString(to);
+  }
+
+  return (<Array<string>> val).map(function (v: string): string {
+    return Buffer.from(v, from).toString(to);
+  });
+}
+
+/**
  * Lists files and/or directories in a specified directory path, filtering by a
  * regular expression pattern.
  *
@@ -221,9 +294,9 @@ function resolveOptions(options: LsOptions | null | undefined): ResolvedLsOption
  *   console.log(entries));
  *
  * @since 0.1.0
- * @see {@link lsTypes}
  * @see {@link lsFiles}
  * @see {@link lsDirs}
+ * @see {@link lsTypes}
  * @see {@link https://nodejs.org/api/fs.html#fsreaddirpath-options-callback fs.readdir}
  */
 export async function ls(
@@ -264,9 +337,12 @@ export async function ls(
   }
 
   // Check and resolve the `rootDir` option
-  if (options.rootDir && (options.rootDir instanceof URL
-      || (typeof options.rootDir === 'string' && /^[a-zA-Z]+:/.test(options.rootDir))
-  )) {
+  if (options.rootDir
+    && (options.rootDir instanceof URL
+      || (typeof options.rootDir === 'string'
+        && /^[a-zA-Z]+:/.test(options.rootDir))
+    )
+  ) {
     options.rootDir = fileUrlToPath(options.rootDir);
   }
 
@@ -284,12 +360,15 @@ export async function ls(
     // Read the specified directory path recursively
     const entries: LsEntries = await fs.promises.readdir(absdirpath, {
       encoding: options?.encoding || 'utf8',
-      recursive: options?.recursive,
+      recursive: options?.recursive
     });
+    // Declare the copy of the entries with UTF-8 encoding to be used by `fs.stat`,
+    // this way we prevent the error due to invalid path thrown by `fs.stat` itself.
+    const utf8Entries: LsEntries = encodeTo(entries, options?.encoding!, 'utf8');
 
     // Filter the entries
     result = await Promise.all(
-      entries.map(async function (entry: StringPath): Promise<(StringPath | null)> {
+      utf8Entries.map(async function (entry: StringPath): Promise<(StringPath | null)> {
         entry = path.join(absdirpath, entry);
         const stats: fs.Stats = await fs.promises.stat(entry);
         let resultType: boolean = false;
@@ -336,6 +415,10 @@ export async function ls(
   } catch (err: unknown) {
     if (err instanceof Error) throw err;
   }
+
+  // Encode back the entries to the specified encoding
+  if (result && options?.encoding! !== 'utf8')
+    result = encodeTo(result, 'utf8', options.encoding!);
   return result;
 }
 

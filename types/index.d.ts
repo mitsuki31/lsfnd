@@ -92,7 +92,9 @@ export declare interface LsTypesInterface {
  */
 export declare interface LsOptions {
   /**
-   * Specifies the character encoding to be used when reading a directory. 
+   * Specifies the character encoding to be used for the output encoding of
+   * returned entries.
+   *
    * @defaultValue `'utf8'`
    * @since        0.1.0
    */
