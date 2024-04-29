@@ -40,6 +40,10 @@
     "url": "https://github.com/mitsuki31/lsfnd/issues"
   },
   "homepage": "https://mitsuki31.github.io/lsfnd",
+  "funding": {
+    "type": "individual",
+    "url": "https://ko-fi.com/dhefam31"
+  },
   "engines": {
     "node": ">=16.20.x"
   },
