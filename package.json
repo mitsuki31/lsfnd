@@ -2,7 +2,7 @@
   "name": "lsfnd",
   "version": "1.0.0-dev",
   "title": "LSFND",
-  "description": "A small Node.js library to ease files and directories listing featuring filter support.",
+  "description": "A lightweight Node.js library to list files and directories with a simple and efficient way",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
   "files": [
