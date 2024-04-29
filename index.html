@@ -1,0 +1,434 @@
+<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>LSFND - v1.0.0</title><meta name="description" content="Documentation for LSFND"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css?cache=1714409535011"/><link rel="stylesheet" href="assets/highlight.css?cache=1714409535011"/><script defer src="assets/main.js?cache=1714409535011"></script><script async src="assets/icons.js?cache=1714409535011" id="tsd-icons-script"></script><script async src="assets/search.js?cache=1714409535011" id="tsd-search-script"></script><script async src="assets/navigation.js?cache=1714409535011" id="tsd-nav-script"></script><style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --md-sys-color-primary: #bec2ff;
+    --md-sys-color-on-primary: #000aa6;
+    --md-sys-color-primary-container: #0113e7;
+    --md-sys-color-on-primary-container: #e0e0ff;
+    --md-sys-color-secondary: #c5c4dd;
+    --md-sys-color-on-secondary: #2e2f42;
+    --md-sys-color-secondary-container: #444559;
+    --md-sys-color-on-secondary-container: #e1e0f9;
+    --md-sys-color-tertiary: #e7b9d5;
+    --md-sys-color-on-tertiary: #45263c;
+    --md-sys-color-tertiary-container: #5e3c53;
+    --md-sys-color-on-tertiary-container: #ffd8ee;
+    --md-sys-color-error: #ffb4ab;
+    --md-sys-color-on-error: #690005;
+    --md-sys-color-error-container: #93000a;
+    --md-sys-color-on-error-container: #ffb4ab;
+    --md-sys-color-background: #1b1b1f;
+    --md-sys-color-on-background: #e5e1e6;
+    --md-sys-color-surface: #1b1b1f;
+    --md-sys-color-on-surface: #e5e1e6;
+    --md-sys-color-surface-variant: #46464f;
+    --md-sys-color-on-surface-variant: #c7c5d0;
+    --md-sys-color-outline: #91909a;
+    --md-sys-color-outline-variant: #46464f;
+    --md-sys-color-shadow: #000000;
+    --md-sys-color-scrim: #000000;
+    --md-sys-color-inverse-surface: #e5e1e6;
+    --md-sys-color-inverse-on-surface: #303034;
+    --md-sys-color-inverse-primary: #313ffc;
+    --md-sys-color-surface-dim: #131316;
+    --md-sys-color-surface-bright: #39393c;
+    --md-sys-color-surface-container-lowest: #0e0e11;
+    --md-sys-color-surface-container-low: #1b1b1f;
+    --md-sys-color-surface-container: #1f1f23;
+    --md-sys-color-surface-container-high: #2a2a2d;
+    --md-sys-color-surface-container-highest: #353438
+  }
+}
+:root[data-theme="dark"] {
+  --md-sys-color-primary: #bec2ff;
+  --md-sys-color-on-primary: #000aa6;
+  --md-sys-color-primary-container: #0113e7;
+  --md-sys-color-on-primary-container: #e0e0ff;
+  --md-sys-color-secondary: #c5c4dd;
+  --md-sys-color-on-secondary: #2e2f42;
+  --md-sys-color-secondary-container: #444559;
+  --md-sys-color-on-secondary-container: #e1e0f9;
+  --md-sys-color-tertiary: #e7b9d5;
+  --md-sys-color-on-tertiary: #45263c;
+  --md-sys-color-tertiary-container: #5e3c53;
+  --md-sys-color-on-tertiary-container: #ffd8ee;
+  --md-sys-color-error: #ffb4ab;
+  --md-sys-color-on-error: #690005;
+  --md-sys-color-error-container: #93000a;
+  --md-sys-color-on-error-container: #ffb4ab;
+  --md-sys-color-background: #1b1b1f;
+  --md-sys-color-on-background: #e5e1e6;
+  --md-sys-color-surface: #1b1b1f;
+  --md-sys-color-on-surface: #e5e1e6;
+  --md-sys-color-surface-variant: #46464f;
+  --md-sys-color-on-surface-variant: #c7c5d0;
+  --md-sys-color-outline: #91909a;
+  --md-sys-color-outline-variant: #46464f;
+  --md-sys-color-shadow: #000000;
+  --md-sys-color-scrim: #000000;
+  --md-sys-color-inverse-surface: #e5e1e6;
+  --md-sys-color-inverse-on-surface: #303034;
+  --md-sys-color-inverse-primary: #313ffc;
+  --md-sys-color-surface-dim: #131316;
+  --md-sys-color-surface-bright: #39393c;
+  --md-sys-color-surface-container-lowest: #0e0e11;
+  --md-sys-color-surface-container-low: #1b1b1f;
+  --md-sys-color-surface-container: #1f1f23;
+  --md-sys-color-surface-container-high: #2a2a2d;
+  --md-sys-color-surface-container-highest: #353438
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --md-sys-color-primary: #313ffc;
+    --md-sys-color-on-primary: #ffffff;
+    --md-sys-color-primary-container: #e0e0ff;
+    --md-sys-color-on-primary-container: #00046a;
+    --md-sys-color-secondary: #5c5d72;
+    --md-sys-color-on-secondary: #ffffff;
+    --md-sys-color-secondary-container: #e1e0f9;
+    --md-sys-color-on-secondary-container: #191a2c;
+    --md-sys-color-tertiary: #78536b;
+    --md-sys-color-on-tertiary: #ffffff;
+    --md-sys-color-tertiary-container: #ffd8ee;
+    --md-sys-color-on-tertiary-container: #2e1126;
+    --md-sys-color-error: #ba1a1a;
+    --md-sys-color-on-error: #ffffff;
+    --md-sys-color-error-container: #ffdad6;
+    --md-sys-color-on-error-container: #410002;
+    --md-sys-color-background: #fffbff;
+    --md-sys-color-on-background: #1b1b1f;
+    --md-sys-color-surface: #fffbff;
+    --md-sys-color-on-surface: #1b1b1f;
+    --md-sys-color-surface-variant: #e3e1ec;
+    --md-sys-color-on-surface-variant: #46464f;
+    --md-sys-color-outline: #777680;
+    --md-sys-color-outline-variant: #c7c5d0;
+    --md-sys-color-shadow: #000000;
+    --md-sys-color-scrim: #000000;
+    --md-sys-color-inverse-surface: #303034;
+    --md-sys-color-inverse-on-surface: #f3f0f4;
+    --md-sys-color-inverse-primary: #bec2ff;
+    --md-sys-color-surface-dim: #dcd9de;
+    --md-sys-color-surface-bright: #fcf8fd;
+    --md-sys-color-surface-container-lowest: #ffffff;
+    --md-sys-color-surface-container-low: #f6f2f7;
+    --md-sys-color-surface-container: #f0edf1;
+    --md-sys-color-surface-container-high: #eae7ec;
+    --md-sys-color-surface-container-highest: #e5e1e6
+  }
+}
+:root[data-theme="light"] {
+  --md-sys-color-primary: #313ffc;
+  --md-sys-color-on-primary: #ffffff;
+  --md-sys-color-primary-container: #e0e0ff;
+  --md-sys-color-on-primary-container: #00046a;
+  --md-sys-color-secondary: #5c5d72;
+  --md-sys-color-on-secondary: #ffffff;
+  --md-sys-color-secondary-container: #e1e0f9;
+  --md-sys-color-on-secondary-container: #191a2c;
+  --md-sys-color-tertiary: #78536b;
+  --md-sys-color-on-tertiary: #ffffff;
+  --md-sys-color-tertiary-container: #ffd8ee;
+  --md-sys-color-on-tertiary-container: #2e1126;
+  --md-sys-color-error: #ba1a1a;
+  --md-sys-color-on-error: #ffffff;
+  --md-sys-color-error-container: #ffdad6;
+  --md-sys-color-on-error-container: #410002;
+  --md-sys-color-background: #fffbff;
+  --md-sys-color-on-background: #1b1b1f;
+  --md-sys-color-surface: #fffbff;
+  --md-sys-color-on-surface: #1b1b1f;
+  --md-sys-color-surface-variant: #e3e1ec;
+  --md-sys-color-on-surface-variant: #46464f;
+  --md-sys-color-outline: #777680;
+  --md-sys-color-outline-variant: #c7c5d0;
+  --md-sys-color-shadow: #000000;
+  --md-sys-color-scrim: #000000;
+  --md-sys-color-inverse-surface: #303034;
+  --md-sys-color-inverse-on-surface: #f3f0f4;
+  --md-sys-color-inverse-primary: #bec2ff;
+  --md-sys-color-surface-dim: #dcd9de;
+  --md-sys-color-surface-bright: #fcf8fd;
+  --md-sys-color-surface-container-lowest: #ffffff;
+  --md-sys-color-surface-container-low: #f6f2f7;
+  --md-sys-color-surface-container: #f0edf1;
+  --md-sys-color-surface-container-high: #eae7ec;
+  --md-sys-color-surface-container-highest: #e5e1e6
+}
+</style><link rel="stylesheet" href="assets/material-style.css"/></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar"><div class="tsd-toolbar-contents container"><div class="table-cell" id="tsd-search" data-base="."><div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><use href="assets/icons.svg#icon-search"></use></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div><div class="field"><div id="tsd-toolbar-links"><a href="https://github.com/mitsuki31/lsfnd.git">GitHub</a></div></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="https://github.com/mitsuki31/lsfnd.git" class="title">LSFND - v1.0.0</a></div><div class="table-cell" id="tsd-widgets"><a href="#" class="tsd-widget tsd-toolbar-icon menu no-caption" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><use href="assets/icons.svg#icon-menu"></use></svg></a></div></div></header><div class="container container-main"><div class="col-content"><div class="tsd-page-title"><h2>LSFND - v1.0.0</h2></div><div class="tsd-panel tsd-typography"><a id="md:lsfnd" class="tsd-anchor"></a><h1><a href="#md:lsfnd">LSFND</a></h1><p><a href="https://npmjs.com/package/lsfnd"><img src="https://img.shields.io/npm/v/lsfnd?logo=npm&label=lsfnd" alt="Version"></a>
+<img src="https://img.shields.io/node/v-lts/lsfnd/latest?logo=node.js&label=node" alt="Min. Node">
+<a href="https://npmjs.com/package/lsfnd"><img src="https://img.shields.io/bundlephobia/min/lsfnd" alt="Bundle size (minified)"></a><br>
+<a href="https://github.com/mitsuki31/lsfnd/actions/workflows/test.yml"><img src="https://github.com/mitsuki31/lsfnd/actions/workflows/test.yml/badge.svg" alt="Test CI"></a>
+<a href="https://github.com/mitsuki31/lsfnd/tree/master/LICENSE"><img src="https://img.shields.io/github/license/mitsuki31/lsfnd?logo=github&logoColor=f9f9f9&label=License&labelColor=yellow&color=white" alt="License"></a></p>
+<p><strong>LSFND</strong> is an abbreviation for <em>list (ls) files (f) and (n) directories (d)</em>,
+a lightweight Node.js library designed to make listing files and directories more convenient.
+It offers an efficient and simple way to explore through your directory structures
+and retrieves the names of files and/or directories leveraging a configurable options
+to modify the listing behavior, such as recursive searches and regular expression filters.</p>
+<p>This library&#39;s <strong>primary benefit</strong> is that every implemented API runs asynchronously,
+guaranteeing that they will <strong>NEVER</strong> disrupt the execution of any other processes.</p>
+<blockquote>
+<p><strong>Important</strong><br>Currently this library only focus on CommonJS (CJS) and ECMAScript Modules (ESM).</p>
+<p>As of version 1.0.0, this library has supported TypeScript projects with various
+module types (i.e., <code>node16</code>, <code>es6</code>, and many more). Previously, it was only supports
+TypeScript projects with module type of <code>commonjs</code>. All type declarations in this
+library also has been enhanced to more robust and strict, thus improving type safety.</p>
+</blockquote>
+<a id="md:apis" class="tsd-anchor"></a><h2><a href="#md:apis">APIs</a></h2><a id="md:ls-function" class="tsd-anchor"></a><h3><a href="#md:ls-function"><code>ls</code> Function</a></h3><pre><code class="language-ts"><span class="hl-0">async</span><span class="hl-1"> </span><span class="hl-0">function</span><span class="hl-1"> </span><span class="hl-2">ls</span><span class="hl-3">(</span><br/><span class="hl-1">  </span><span class="hl-4">dirpath</span><span class="hl-5">:</span><span class="hl-1"> </span><span class="hl-6">StringPath</span><span class="hl-1"> </span><span class="hl-5">|</span><span class="hl-1"> </span><span class="hl-6">URL</span><span class="hl-3">,</span><br/><span class="hl-1">  </span><span class="hl-4">options</span><span class="hl-5">?:</span><span class="hl-1"> </span><span class="hl-6">LsOptions</span><span class="hl-1"> </span><span class="hl-5">|</span><span class="hl-1"> </span><span class="hl-6">RegExp</span><span class="hl-1"> </span><span class="hl-5">|</span><span class="hl-1"> </span><span class="hl-7">undefined</span><span class="hl-3">,</span><br/><span class="hl-1">  </span><span class="hl-4">type</span><span class="hl-5">?:</span><span class="hl-1"> </span><span class="hl-6">LsTypes</span><span class="hl-1"> </span><span class="hl-5">|</span><span class="hl-1"> </span><span class="hl-7">undefined</span><br/><span class="hl-3">)</span><span class="hl-5">:</span><span class="hl-1"> </span><span class="hl-6">Promise</span><span class="hl-3">&lt;</span><span class="hl-6">LsResult</span><span class="hl-3">&gt;</span>
+</code><button>Copy</button></pre>
+<p>The <code>ls</code> function is an asynchronous function that retrieves a listing of files
+and/or directories within a specified directory path. It offers powerful customizable
+additional options to configures the listing behavior (see <a href="https://mitsuki31.github.io/lsfnd/interfaces/types.LsOptions.html"><code>LsOptions</code></a>),
+filtering using regular expression and specify the type of returned results (i.e.,
+regular files or directories, or includes both).</p>
+<a id="md:parameters" class="tsd-anchor"></a><h4><a href="#md:parameters">Parameters</a></h4><ul>
+<li><p><code>dirpath</code> : { <a href="https://mitsuki31.github.io/lsfnd/types/types.StringPath.html"><code>StringPath</code></a> | <a href="https://nodejs.org/api/url.html#class-url"><code>URL</code></a> }<br>The absolute or relative path to the directory you want to list. It can be a
+string path or a file URL path (either a URL string or a <a href="https://nodejs.org/api/url.html#class-url"><code>URL</code></a> object) with
+<code>&#39;file:&#39;</code> protocol.</p>
+</li>
+<li><p><code>options</code> : { <a href="https://mitsuki31.github.io/lsfnd/interfaces/types.LsOptions.html"><code>LsOptions</code></a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp"><code>RegExp</code></a> | <code>undefined</code> } (<em>nullable, optional</em>)<br>An optional regular expression or object that configures the listing behavior. By
+supplying a regular expression to the <code>match</code> and <code>exclude</code> options, you may
+filter the file or directory names. You can also enable the <code>recursive</code> option
+(i.e., set it to <code>true</code>) to enable the ability to recursively traverse subdirectories.
+If passed with a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp"><code>RegExp</code></a> object, then it only supplied the <code>match</code> option and
+the rest options will uses their default values. See <a href="https://mitsuki31.github.io/lsfnd/interfaces/types.LsOptions.html"><code>LsOptions</code></a>
+for further information in detail.</p>
+</li>
+<li><p><code>type</code> : { <a href="https://mitsuki31.github.io/lsfnd/types/types.LsTypes.html"><code>LsTypes</code></a> | <code>undefined</code> } (<em>nullable, optional</em>)<br>An optional parameter that specifies the type of entries you want to include
+in the results. You can pass <code>0</code> (zero) as value which will be interpreted as
+default behavior (i.e., include both regular files type and directories type).
+Refer to <a href="#md:lstypes-enum"><code>lsTypes</code></a> to see all supported types.</p>
+</li>
+</ul>
+<a id="md:return" class="tsd-anchor"></a><h4><a href="#md:return">Return</a></h4><p>Returns a promise that resolves to an array of string containing the entries result.
+It can be <code>null</code> if an error occurred while listing a directory, or returns a
+promise with an empty array if any files and directories doesn&#39;t match with the
+specified filter options.</p>
+<blockquote>
+<p><strong>Note</strong><br>💡 <strong>Tip</strong>: You can combine options for more granular control. For example,
+you can list directories and/or files recursively while filtering by either
+specific extensions or names.</p>
+</blockquote>
+<details>
+<summary>Example Usage (CJS)</summary>
+
+<pre><code class="language-js"><span class="hl-0">const</span><span class="hl-1"> </span><span class="hl-3">{</span><span class="hl-1"> </span><span class="hl-8">ls</span><span class="hl-3">,</span><span class="hl-1"> </span><span class="hl-8">lsTypes</span><span class="hl-1"> </span><span class="hl-3">}</span><span class="hl-1"> </span><span class="hl-5">=</span><span class="hl-1"> </span><span class="hl-2">require</span><span class="hl-1">(</span><span class="hl-9">&#39;</span><span class="hl-10">lsfnd</span><span class="hl-9">&#39;</span><span class="hl-1">)</span><span class="hl-3">;</span><br/><br/><span class="hl-1">(</span><span class="hl-0">async</span><span class="hl-1"> </span><span class="hl-3">()</span><span class="hl-1"> </span><span class="hl-0">=&gt;</span><span class="hl-1"> </span><span class="hl-3">{</span><br/><span class="hl-3">  </span><span class="hl-11">// List all files and directories in the current directory</span><br/><span class="hl-12">  </span><span class="hl-0">const</span><span class="hl-12"> </span><span class="hl-8">allFiles</span><span class="hl-12"> </span><span class="hl-5">=</span><span class="hl-12"> </span><span class="hl-5">await</span><span class="hl-12"> </span><span class="hl-2">ls</span><span class="hl-12">(</span><span class="hl-9">&#39;</span><span class="hl-10">.</span><span class="hl-9">&#39;</span><span class="hl-12">)</span><span class="hl-3">;</span><br/><span class="hl-12">  </span><span class="hl-1">console</span><span class="hl-3">.</span><span class="hl-2">log</span><span class="hl-12">(</span><span class="hl-1">allFiles</span><span class="hl-12">)</span><span class="hl-3">;</span><br/><span class="hl-12">  </span><br/><span class="hl-3">  </span><span class="hl-11">// List only JavaScript files in the current directory recursively</span><br/><span class="hl-12">  </span><span class="hl-0">const</span><span class="hl-12"> </span><span class="hl-8">jsFiles</span><span class="hl-12"> </span><span class="hl-5">=</span><span class="hl-12"> </span><span class="hl-5">await</span><span class="hl-12"> </span><span class="hl-2">ls</span><span class="hl-12">(</span><span class="hl-9">&#39;</span><span class="hl-10">.</span><span class="hl-9">&#39;</span><span class="hl-3">,</span><span class="hl-12"> </span><span class="hl-3">{</span><br/><span class="hl-12">    recursive</span><span class="hl-3">:</span><span class="hl-12"> </span><span class="hl-13">true</span><span class="hl-3">,</span><br/><span class="hl-12">    match</span><span class="hl-3">:</span><span class="hl-10"> </span><span class="hl-9">/</span><span class="hl-14">\.</span><span class="hl-10">js</span><span class="hl-5">$</span><span class="hl-9">/</span><br/><span class="hl-12">  </span><span class="hl-3">},</span><span class="hl-12"> </span><span class="hl-1">lsTypes</span><span class="hl-3">.</span><span class="hl-8">LS_F</span><span class="hl-12">)</span><span class="hl-3">;</span><br/><span class="hl-12">  </span><span class="hl-1">console</span><span class="hl-3">.</span><span class="hl-2">log</span><span class="hl-12">(</span><span class="hl-1">jsFiles</span><span class="hl-12">)</span><span class="hl-3">;</span><br/><span class="hl-3">}</span><span class="hl-1">)()</span><span class="hl-3">;</span>
+</code><button>Copy</button></pre>
+</details>
+
+<details>
+<summary>Example Usage (ESM)</summary>
+
+<pre><code class="language-js"><span class="hl-5">import</span><span class="hl-1"> </span><span class="hl-3">{</span><span class="hl-12"> </span><span class="hl-1">ls</span><span class="hl-3">,</span><span class="hl-12"> </span><span class="hl-1">lsTypes</span><span class="hl-12"> </span><span class="hl-3">}</span><span class="hl-1"> </span><span class="hl-5">from</span><span class="hl-1"> </span><span class="hl-9">&#39;</span><span class="hl-10">lsfnd</span><span class="hl-9">&#39;</span><span class="hl-3">;</span><br/><br/><span class="hl-11">// List all files and directories in the current directory</span><br/><span class="hl-0">const</span><span class="hl-1"> </span><span class="hl-8">allFiles</span><span class="hl-1"> </span><span class="hl-5">=</span><span class="hl-1"> </span><span class="hl-5">await</span><span class="hl-1"> </span><span class="hl-2">ls</span><span class="hl-1">(</span><span class="hl-9">&#39;</span><span class="hl-10">.</span><span class="hl-9">&#39;</span><span class="hl-1">)</span><span class="hl-3">;</span><br/><span class="hl-1">console</span><span class="hl-3">.</span><span class="hl-2">log</span><span class="hl-1">(allFiles)</span><span class="hl-3">;</span><br/><br/><span class="hl-11">// List only JavaScript files in the current directory recursively</span><br/><span class="hl-0">const</span><span class="hl-1"> </span><span class="hl-8">jsFiles</span><span class="hl-1"> </span><span class="hl-5">=</span><span class="hl-1"> </span><span class="hl-5">await</span><span class="hl-1"> </span><span class="hl-2">ls</span><span class="hl-1">(</span><span class="hl-9">&#39;</span><span class="hl-10">.</span><span class="hl-9">&#39;</span><span class="hl-3">,</span><span class="hl-1"> </span><span class="hl-3">{</span><br/><span class="hl-1">  </span><span class="hl-12">recursive</span><span class="hl-3">:</span><span class="hl-1"> </span><span class="hl-13">true</span><span class="hl-3">,</span><br/><span class="hl-1">  </span><span class="hl-12">match</span><span class="hl-3">:</span><span class="hl-10"> </span><span class="hl-9">/</span><span class="hl-14">\.</span><span class="hl-10">js</span><span class="hl-5">$</span><span class="hl-9">/</span><br/><span class="hl-3">},</span><span class="hl-1"> lsTypes</span><span class="hl-3">.</span><span class="hl-8">LS_F</span><span class="hl-1">)</span><span class="hl-3">;</span><br/><span class="hl-1">console</span><span class="hl-3">.</span><span class="hl-2">log</span><span class="hl-1">(jsFiles)</span><span class="hl-3">;</span>
+</code><button>Copy</button></pre>
+</details>
+
+<a id="md:lsfiles-function" class="tsd-anchor"></a><h3><a href="#md:lsfiles-function"><code>lsFiles</code> Function</a></h3><pre><code class="language-ts"><span class="hl-0">async</span><span class="hl-1"> </span><span class="hl-0">function</span><span class="hl-1"> </span><span class="hl-2">lsFiles</span><span class="hl-3">(</span><br/><span class="hl-1">  </span><span class="hl-4">dirpath</span><span class="hl-5">:</span><span class="hl-1"> </span><span class="hl-6">StringPath</span><span class="hl-1"> </span><span class="hl-5">|</span><span class="hl-1"> </span><span class="hl-6">URL</span><span class="hl-3">,</span><br/><span class="hl-1">  </span><span class="hl-4">options</span><span class="hl-5">?:</span><span class="hl-1"> </span><span class="hl-6">LsOptions</span><span class="hl-1"> </span><span class="hl-5">|</span><span class="hl-1"> </span><span class="hl-6">RegExp</span><span class="hl-1"> </span><span class="hl-5">|</span><span class="hl-1"> </span><span class="hl-7">undefined</span><br/><span class="hl-3">)</span><span class="hl-5">:</span><span class="hl-1"> </span><span class="hl-6">Promise</span><span class="hl-3">&lt;</span><span class="hl-6">LsResult</span><span class="hl-3">&gt;</span>
+</code><button>Copy</button></pre>
+<p>An asynchronous function that retrieves a listing of files within a specified
+directory path. This function behaves the same as <a href="#md:ls-function"><code>ls</code></a> function,
+but this function only lists and retrieves the regular files type (i.e., excluding
+any directories type).</p>
+<blockquote>
+<p>This function is an alias for:</p>
+<pre><code class="language-js"><span class="hl-11">// It uses LS_F to filter only the regular file type</span><br/><span class="hl-2">ls</span><span class="hl-1">(dirpath</span><span class="hl-3">,</span><span class="hl-1"> options</span><span class="hl-3">,</span><span class="hl-1"> lsTypes</span><span class="hl-3">.</span><span class="hl-8">LS_F</span><span class="hl-1">)</span><span class="hl-3">;</span>
+</code><button>Copy</button></pre>
+</blockquote>
+<a id="md:parameters-1" class="tsd-anchor"></a><h4><a href="#md:parameters-1">Parameters</a></h4><ul>
+<li><p><code>dirpath</code> : { <a href="https://mitsuki31.github.io/lsfnd/types/types.StringPath.html"><code>StringPath</code></a> | <a href="https://nodejs.org/api/url.html#class-url"><code>URL</code></a> }<br>The absolute or relative path to the directory you want to list. It can be a
+string path or a file URL path (either a URL string or a <a href="https://nodejs.org/api/url.html#class-url"><code>URL</code></a> object) with
+<code>&#39;file:&#39;</code> protocol.</p>
+</li>
+<li><p><code>options</code> : { <a href="https://mitsuki31.github.io/lsfnd/interfaces/types.LsOptions.html"><code>LsOptions</code></a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp"><code>RegExp</code></a> | <code>undefined</code> } (<em>nullable, optional</em>)<br>An optional regular expression or object that configures the listing behavior. By
+supplying a regular expression to the <code>match</code> and <code>exclude</code> options, you may
+filter the file or directory names. You can also enable the <code>recursive</code> option
+(i.e., set it to <code>true</code>) to enable the ability to recursively traverse subdirectories.
+If passed with a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp"><code>RegExp</code></a> object, then it only supplied the <code>match</code> option and
+the rest options will uses their default values. See <a href="https://mitsuki31.github.io/lsfnd/interfaces/types.LsOptions.html"><code>LsOptions</code></a>
+for further information in detail.</p>
+</li>
+</ul>
+<a id="md:return-1" class="tsd-anchor"></a><h4><a href="#md:return-1">Return</a></h4><p>Returns a promise that resolves to an array of string containing the entries result.
+It can be <code>null</code> if an error occurred while listing a directory, or returns a
+promise with an empty array if any files doesn&#39;t match with the specified filter
+options.</p>
+<details>
+<summary>Example Usage (CJS)</summary>
+
+<pre><code class="language-js"><span class="hl-0">const</span><span class="hl-1"> </span><span class="hl-3">{</span><span class="hl-1"> </span><span class="hl-8">lsFiles</span><span class="hl-1"> </span><span class="hl-3">}</span><span class="hl-1"> </span><span class="hl-5">=</span><span class="hl-1"> </span><span class="hl-2">require</span><span class="hl-1">(</span><span class="hl-9">&#39;</span><span class="hl-10">lsfnd</span><span class="hl-9">&#39;</span><span class="hl-1">)</span><span class="hl-3">;</span><br/><br/><span class="hl-1">(</span><span class="hl-0">async</span><span class="hl-1"> </span><span class="hl-3">()</span><span class="hl-1"> </span><span class="hl-0">=&gt;</span><span class="hl-1"> </span><span class="hl-3">{</span><br/><span class="hl-3">  </span><span class="hl-11">// Search and list LICENSE and README file in current directory</span><br/><span class="hl-12">  </span><span class="hl-0">const</span><span class="hl-12"> </span><span class="hl-8">files</span><span class="hl-12"> </span><span class="hl-5">=</span><span class="hl-12"> </span><span class="hl-5">await</span><span class="hl-12"> </span><span class="hl-2">lsFiles</span><span class="hl-12">(</span><span class="hl-9">&#39;</span><span class="hl-10">.</span><span class="hl-9">&#39;</span><span class="hl-3">,</span><span class="hl-10"> </span><span class="hl-9">/(</span><span class="hl-10">README</span><span class="hl-5">|</span><span class="hl-10">LICENSE</span><span class="hl-9">)(</span><span class="hl-14">\.</span><span class="hl-10">md</span><span class="hl-5">|</span><span class="hl-14">\.</span><span class="hl-10">txt</span><span class="hl-9">)</span><span class="hl-5">*</span><span class="hl-5">$</span><span class="hl-9">/</span><span class="hl-12">)</span><span class="hl-3">;</span><br/><span class="hl-12">  </span><span class="hl-1">console</span><span class="hl-3">.</span><span class="hl-2">log</span><span class="hl-12">(</span><span class="hl-1">files</span><span class="hl-12">)</span><span class="hl-3">;</span><br/><span class="hl-3">}</span><span class="hl-1">)()</span><span class="hl-3">;</span>
+</code><button>Copy</button></pre>
+</details>
+
+<details>
+<summary>Example Usage (ESM)</summary>
+
+<pre><code class="language-js"><span class="hl-5">import</span><span class="hl-1"> </span><span class="hl-3">{</span><span class="hl-12"> </span><span class="hl-1">lsFiles</span><span class="hl-12"> </span><span class="hl-3">}</span><span class="hl-1"> </span><span class="hl-5">from</span><span class="hl-1"> </span><span class="hl-9">&#39;</span><span class="hl-10">lsfnd</span><span class="hl-9">&#39;</span><span class="hl-3">;</span><br/><br/><span class="hl-11">// Search and list LICENSE and README file in current directory</span><br/><span class="hl-0">const</span><span class="hl-1"> </span><span class="hl-8">files</span><span class="hl-1"> </span><span class="hl-5">=</span><span class="hl-1"> </span><span class="hl-5">await</span><span class="hl-1"> </span><span class="hl-2">lsFiles</span><span class="hl-1">(</span><span class="hl-9">&#39;</span><span class="hl-10">.</span><span class="hl-9">&#39;</span><span class="hl-3">,</span><span class="hl-10"> </span><span class="hl-9">/(</span><span class="hl-10">README</span><span class="hl-5">|</span><span class="hl-10">LICENSE</span><span class="hl-9">)(</span><span class="hl-14">\.</span><span class="hl-10">md</span><span class="hl-5">|</span><span class="hl-14">\.</span><span class="hl-10">txt</span><span class="hl-9">)</span><span class="hl-5">*</span><span class="hl-5">$</span><span class="hl-9">/</span><span class="hl-1">)</span><span class="hl-3">;</span><br/><span class="hl-1">console</span><span class="hl-3">.</span><span class="hl-2">log</span><span class="hl-1">(files)</span><span class="hl-3">;</span>
+</code><button>Copy</button></pre>
+</details>
+
+<a id="md:lsdirs-function" class="tsd-anchor"></a><h3><a href="#md:lsdirs-function"><code>lsDirs</code> Function</a></h3><pre><code class="language-ts"><span class="hl-0">async</span><span class="hl-1"> </span><span class="hl-0">function</span><span class="hl-1"> </span><span class="hl-2">lsDirs</span><span class="hl-3">(</span><br/><span class="hl-1">  </span><span class="hl-4">dirpath</span><span class="hl-5">:</span><span class="hl-1"> </span><span class="hl-6">StringPath</span><span class="hl-1"> </span><span class="hl-5">|</span><span class="hl-1"> </span><span class="hl-6">URL</span><span class="hl-3">,</span><br/><span class="hl-1">  </span><span class="hl-4">options</span><span class="hl-5">?:</span><span class="hl-1"> </span><span class="hl-6">LsOptions</span><span class="hl-1"> </span><span class="hl-5">|</span><span class="hl-1"> </span><span class="hl-6">RegExp</span><span class="hl-1"> </span><span class="hl-5">|</span><span class="hl-1"> </span><span class="hl-7">undefined</span><br/><span class="hl-3">)</span><span class="hl-5">:</span><span class="hl-1"> </span><span class="hl-6">Promise</span><span class="hl-3">&lt;</span><span class="hl-6">LsResult</span><span class="hl-3">&gt;</span>
+</code><button>Copy</button></pre>
+<p>An asynchronous function that retrieves a listing of directories within a specified
+directory path. This function behaves the same as <a href="#md:ls-function"><code>ls</code></a> function, but this
+function only lists and retrieves the directories type (i.e., excluding any files type).</p>
+<blockquote>
+<p>This function is an alias for:</p>
+<pre><code class="language-js"><span class="hl-11">// It uses LS_D to filter only the directory type</span><br/><span class="hl-2">ls</span><span class="hl-1">(dirpath</span><span class="hl-3">,</span><span class="hl-1"> options</span><span class="hl-3">,</span><span class="hl-1"> lsTypes</span><span class="hl-3">.</span><span class="hl-8">LS_D</span><span class="hl-1">)</span><span class="hl-3">;</span>
+</code><button>Copy</button></pre>
+</blockquote>
+<a id="md:parameters-2" class="tsd-anchor"></a><h4><a href="#md:parameters-2">Parameters</a></h4><ul>
+<li><p><code>dirpath</code> : { <a href="https://mitsuki31.github.io/lsfnd/types/types.StringPath.html"><code>StringPath</code></a> | <a href="https://nodejs.org/api/url.html#class-url"><code>URL</code></a> }<br>The absolute or relative path to the directory you want to list. It can be a
+string path or a file URL path (either a URL string or a <a href="https://nodejs.org/api/url.html#class-url"><code>URL</code></a> object) with
+<code>&#39;file:&#39;</code> protocol.</p>
+</li>
+<li><p><code>options</code> : { <a href="https://mitsuki31.github.io/lsfnd/interfaces/types.LsOptions.html"><code>LsOptions</code></a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp"><code>RegExp</code></a> | <code>undefined</code> } (<em>nullable, optional</em>)<br>An optional regular expression or object that configures the listing behavior. By
+supplying a regular expression to the <code>match</code> and <code>exclude</code> options, you may
+filter the file or directory names. You can also enable the <code>recursive</code> option
+(i.e., set it to <code>true</code>) to enable the ability to recursively traverse subdirectories.
+If passed with a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp"><code>RegExp</code></a> object, then it only supplied the <code>match</code> option and
+the rest options will uses their default values. See <a href="https://mitsuki31.github.io/lsfnd/interfaces/types.LsOptions.html"><code>LsOptions</code></a>
+for further information in detail.</p>
+</li>
+</ul>
+<a id="md:return-2" class="tsd-anchor"></a><h4><a href="#md:return-2">Return</a></h4><p>Returns a promise that resolves to an array of string containing the entries result.
+It can be <code>null</code> if an error occurred while listing a directory, or returns a
+promise with an empty array if any directories doesn&#39;t match with the specified
+filter options.</p>
+<details>
+<summary>Example Usage (CJS)</summary>
+
+<pre><code class="language-js"><span class="hl-0">const</span><span class="hl-1"> </span><span class="hl-3">{</span><span class="hl-1"> </span><span class="hl-8">lsDirs</span><span class="hl-1"> </span><span class="hl-3">}</span><span class="hl-1"> </span><span class="hl-5">=</span><span class="hl-1"> </span><span class="hl-2">require</span><span class="hl-1">(</span><span class="hl-9">&#39;</span><span class="hl-10">lsfnd</span><span class="hl-9">&#39;</span><span class="hl-1">)</span><span class="hl-3">;</span><br/><br/><span class="hl-1">(</span><span class="hl-0">async</span><span class="hl-1"> </span><span class="hl-3">()</span><span class="hl-1"> </span><span class="hl-0">=&gt;</span><span class="hl-1"> </span><span class="hl-3">{</span><br/><span class="hl-3">  </span><span class="hl-11">// List all installed NPM packages in &#39;node_modules&#39; directory</span><br/><span class="hl-3">  </span><span class="hl-11">// excluding &#39;.bin&#39; directory and organization packages (prefixed with &#39;@&#39;)</span><br/><span class="hl-12">  </span><span class="hl-0">const</span><span class="hl-12"> </span><span class="hl-8">npmPkgs</span><span class="hl-12"> </span><span class="hl-5">=</span><span class="hl-12"> </span><span class="hl-5">await</span><span class="hl-12"> </span><span class="hl-2">lsDirs</span><span class="hl-12">(</span><span class="hl-9">&#39;</span><span class="hl-10">node_modules</span><span class="hl-9">&#39;</span><span class="hl-3">,</span><span class="hl-12"> </span><span class="hl-3">{</span><span class="hl-12"> exclude</span><span class="hl-3">:</span><span class="hl-10"> </span><span class="hl-9">/(</span><span class="hl-14">\.</span><span class="hl-10">bin</span><span class="hl-5">|</span><span class="hl-10">@</span><span class="hl-15">.</span><span class="hl-5">+</span><span class="hl-9">)/</span><span class="hl-12"> </span><span class="hl-3">}</span><span class="hl-12">)</span><span class="hl-3">;</span><br/><span class="hl-12">  </span><span class="hl-1">console</span><span class="hl-3">.</span><span class="hl-2">log</span><span class="hl-12">(</span><span class="hl-1">npmPkgs</span><span class="hl-12">)</span><span class="hl-3">;</span><br/><span class="hl-3">}</span><span class="hl-1">)()</span><span class="hl-3">;</span>
+</code><button>Copy</button></pre>
+</details>
+
+<details>
+<summary>Example Usage (ESM)</summary>
+
+<pre><code class="language-js"><span class="hl-5">import</span><span class="hl-1"> </span><span class="hl-3">{</span><span class="hl-12"> </span><span class="hl-1">lsDirs</span><span class="hl-12"> </span><span class="hl-3">}</span><span class="hl-1"> </span><span class="hl-5">from</span><span class="hl-1"> </span><span class="hl-9">&#39;</span><span class="hl-10">lsfnd</span><span class="hl-9">&#39;</span><span class="hl-3">;</span><br/><br/><span class="hl-11">// List all installed NPM packages in &#39;node_modules&#39; directory</span><br/><span class="hl-11">// excluding &#39;.bin&#39; directory and organization packages (prefixed with &#39;@&#39;)</span><br/><span class="hl-0">const</span><span class="hl-1"> </span><span class="hl-8">npmPkgs</span><span class="hl-1"> </span><span class="hl-5">=</span><span class="hl-1"> </span><span class="hl-5">await</span><span class="hl-1"> </span><span class="hl-2">lsDirs</span><span class="hl-1">(</span><span class="hl-9">&#39;</span><span class="hl-10">node_modules</span><span class="hl-9">&#39;</span><span class="hl-3">,</span><span class="hl-1"> </span><span class="hl-3">{</span><span class="hl-1"> </span><span class="hl-12">exclude</span><span class="hl-3">:</span><span class="hl-10"> </span><span class="hl-9">/(</span><span class="hl-14">\.</span><span class="hl-10">bin</span><span class="hl-5">|</span><span class="hl-10">@</span><span class="hl-15">.</span><span class="hl-5">+</span><span class="hl-9">)/</span><span class="hl-1"> </span><span class="hl-3">}</span><span class="hl-1">)</span><span class="hl-3">;</span><br/><span class="hl-1">console</span><span class="hl-3">.</span><span class="hl-2">log</span><span class="hl-1">(npmPkgs)</span><span class="hl-3">;</span>
+</code><button>Copy</button></pre>
+</details>
+
+<a id="md:lstypes-enum" class="tsd-anchor"></a><h3><a href="#md:lstypes-enum"><code>lsTypes</code> Enum</a></h3><p>An enumeration defines the different types of listings supported by the
+<a href="#md:ls-function"><code>ls</code></a> function. It specifies which file system entries should be
+included in the results. For more details documentation, refer to <a href="https://mitsuki31.github.io/lsfnd/interfaces/types.LsTypesInterface.html"><code>LsTypesInterface</code></a>
+for the type documentation or <a href="https://mitsuki31.github.io/lsfnd/types/types.LsTypes.html"><code>lsTypes</code></a> for the actual enum documentation.</p>
+<a id="md:properties" class="tsd-anchor"></a><h4><a href="#md:properties">Properties</a></h4><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>LS_A</code></td>
+<td>Represents an option to includes all types (i.e., includes both regular files and directories type).</td>
+<td><code>0b01</code></td>
+</tr>
+<tr>
+<td><code>LS_D</code></td>
+<td>Represents an option to includes only the directories type.</td>
+<td><code>0b10</code></td>
+</tr>
+<tr>
+<td><code>LS_F</code></td>
+<td>Represents an option to includes only the regular files type.</td>
+<td><code>0b100</code></td>
+</tr>
+</tbody></table>
+<a id="md:defaultlsoptions-object" class="tsd-anchor"></a><h3><a href="#md:defaultlsoptions-object"><code>defaultLsOptions</code> Object</a></h3><p>A constant object containing all default values of <a href="https://mitsuki31.github.io/lsfnd/interfaces/types.LsOptions.html"><code>LsOptions</code></a>
+type, typically implicitly used when user not specified the <code>options</code> argument in every <code>ls*</code>
+functions.</p>
+<a id="md:properties-1" class="tsd-anchor"></a><h4><a href="#md:properties-1">Properties</a></h4><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Default Value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>encoding</code></td>
+<td><code>&#39;utf8&#39;</code></td>
+</tr>
+<tr>
+<td><code>recursive</code></td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>match</code></td>
+<td><code>/.+/</code></td>
+</tr>
+<tr>
+<td><code>exclude</code></td>
+<td><code>undefined</code></td>
+</tr>
+<tr>
+<td><code>rootDir</code></td>
+<td><code>process.cwd()</code></td>
+</tr>
+<tr>
+<td><code>absolute</code></td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>basename</code></td>
+<td><code>false</code></td>
+</tr>
+</tbody></table>
+<a id="md:license" class="tsd-anchor"></a><h2><a href="#md:license">License</a></h2><p>This project is licensed under the terms of <a href="./LICENSE">MIT</a> license.</p>
+<!-- Links -->
+</div></div><div class="col-sidebar"><div class="page-menu"><div class="tsd-navigation settings"><details class="tsd-index-accordion"><summary class="tsd-accordion-summary"><h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="assets/icons.svg#icon-chevronDown"></use></svg>Settings</h3></summary><div class="tsd-accordion-details"><div class="tsd-filter-visibility"><h4 class="uppercase">Member Visibility</h4><form><ul id="tsd-filter-options"><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-private" name="private"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Private</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></form></div><div class="tsd-theme-toggle"><h4 class="uppercase">Theme</h4><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div><details open class="tsd-index-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="assets/icons.svg#icon-chevronDown"></use></svg>On This Page</h3></summary><div class="tsd-accordion-details"><a href="#md:lsfnd"><span>LSFND</span></a><ul><li><a href="#md:apis"><span>APIs</span></a></li><li><ul><li><a href="#md:ls-function"><span>ls <wbr/>Function</span></a></li><li><ul><li><a href="#md:parameters"><span>Parameters</span></a></li><li><a href="#md:return"><span>Return</span></a></li></ul></li><li><a href="#md:lsfiles-function"><span>ls<wbr/>Files <wbr/>Function</span></a></li><li><ul><li><a href="#md:parameters-1"><span>Parameters</span></a></li><li><a href="#md:return-1"><span>Return</span></a></li></ul></li><li><a href="#md:lsdirs-function"><span>ls<wbr/>Dirs <wbr/>Function</span></a></li><li><ul><li><a href="#md:parameters-2"><span>Parameters</span></a></li><li><a href="#md:return-2"><span>Return</span></a></li></ul></li><li><a href="#md:lstypes-enum"><span>ls<wbr/>Types <wbr/>Enum</span></a></li><li><ul><li><a href="#md:properties"><span>Properties</span></a></li></ul></li><li><a href="#md:defaultlsoptions-object"><span>default<wbr/>Ls<wbr/>Options <wbr/>Object</span></a></li><li><ul><li><a href="#md:properties-1"><span>Properties</span></a></li></ul></li></ul></li><li><a href="#md:license"><span>License</span></a></li></ul></div></details></div><div class="site-menu"><nav id="tsd-sidebar-links" class="tsd-navigation"><a href="https://github.com/mitsuki31/lsfnd/issues/new">Report any issues</a></nav><nav class="tsd-navigation"><a href="index.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="assets/icons.svg#icon-1"></use></svg><span>LSFND - v1.0.0</span></a><ul class="tsd-small-nested-navigation" id="tsd-nav-container" data-base="."><li>Loading...</li></ul></nav></div></div></div><div class="tsd-generator"><p style="line-height: 28px;">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a> v0.25.12<br>
+            <span id="generation-date"></span>
+            <script>
+                window.GENERATION_DATE = 1714409540226;
+
+                (() => {
+                    
+        const formatter = new Intl.RelativeTimeFormat('en', {
+            numeric: 'auto',
+            style: 'short',
+        });
+
+        const divisions = [
+            { amount: 60, name: 'seconds' },
+            { amount: 60, name: 'minutes' },
+            { amount: 24, name: 'hours' },
+            { amount: 7, name: 'days' },
+            { amount: 4.34524, name: 'weeks' },
+            { amount: 12, name: 'months' },
+            { amount: Number.POSITIVE_INFINITY, name: 'years' }
+        ];
+
+        function formatTimeAgo(date) {
+            let duration = (date - new Date()) / 1000;
+            
+            for (const division of divisions) {
+                if (Math.abs(duration) < division.amount) {
+                    return formatter.format(Math.round(duration), division.name);
+                }
+                duration /= division.amount;
+            }
+        }
+
+        document.getElementById('generation-date').title = new Date(window.GENERATION_DATE).toLocaleString();
+        document.getElementById('generation-date').innerText = `Last modified ${formatTimeAgo(window.GENERATION_DATE)}`;
+    
+                })();
+            </script>
+        </p></div><div class="overlay"></div><script>
+          try {
+            const generateLinkElement = document.querySelector(".tsd-generator a");
+            const link = document.createElement("a");
+            Object.assign(link, {
+              href: "https://github.com/dmnsgn/typedoc-material-theme",
+              target: "_blank",
+              rel: "noreferrer",
+              innerText: "typedoc-material-theme."
+            });
+            generateLinkElement.insertAdjacentElement("afterend", link);
+            generateLinkElement.insertAdjacentText("afterend", " with ");
+          } catch (error) {
+
+          }
+        </script></body></html>
