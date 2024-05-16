@@ -121,6 +121,7 @@ async function minify(files: Array<string>): Promise<void> {
   const tsc: ChildProcess = spawn(tscCmd[0], tscCmd.slice(1), {
     cwd: rootDir,
     stdio: 'inherit',
+    shell: true,
     windowsHide: true
   });
 
