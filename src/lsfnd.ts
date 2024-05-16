@@ -13,7 +13,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { isRegExp } from 'node:util';
-import { URL } from 'node:url';
+import { URL, fileURLToPath } from 'node:url';
 import { lsTypes }  from './lsTypes';
 import type {
   StringPath,
@@ -81,7 +81,9 @@ function fileUrlToPath(url: URL | StringPath): StringPath {
       || (typeof url === 'string' && !/^file:(\/\/?|\.\.?\/*)/.test(url))) {
     throw new URIError('Invalid URL file scheme');
   }
-  return (url instanceof URL) ? url.pathname : url.replace(/^file:/, '');
+  return (url instanceof URL)
+    ? fileURLToPath(url).replaceAll(/\\/g, '/')
+    : url.replace(/^file:/, '');
 }
 
 /**
@@ -311,7 +313,10 @@ export async function ls(
     if (dirpath.protocol !== 'file:') {
       throw new URIError(`Unsupported protocol: '${dirpath.protocol}'`);
     }
-    dirpath = dirpath.pathname;   // Extract the path (without the protocol)
+    // We need to use `fileURLToPath` to ensure it converted to string path
+    // correctly on Windows platform, after that replace all Windows path separator ('\')
+    // with POSIX path separator ('/').
+    dirpath = fileURLToPath(dirpath).replaceAll(/\\/g, '/');
   } else if (typeof dirpath === 'string') {
     if (/^[a-zA-Z]+:/.test(dirpath)) {
       if (!dirpath.startsWith('file:')) {
