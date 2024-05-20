@@ -28,6 +28,22 @@ import type {
 type Unpack<A> = A extends Array<(infer U)> ? U : A;
 
 /**
+ * A regular expression pattern to parse the file URL path,
+ * following the WHATWG URL Standard.
+ * 
+ * @see {@link https://url.spec.whatwg.org/ WHATWG URL Standard}
+ * @internal
+ */
+const FILE_URL_PATTERN: RegExp = /^file:\/\/\/?(?:[A-Za-z]:)?(?:\/[^\s\\]+)*(?:\/)?/;
+
+/**
+ * A regular expression pattern to parse and detect the Windows path.
+ *
+ * @internal
+ */
+const WIN32_PATH_PATTERN: RegExp = /^[A-Za-z]:?(?:\\|\/)(?:[^\\/:*?"<>|\r\n]+(?:\\|\/))*[^\\/:*?"<>|\r\n]*$/;
+
+/**
  * An object containing all default values of {@link LsOptions `LsOptions`} type.
  *
  * @since 1.0.0
@@ -84,6 +100,22 @@ function fileUrlToPath(url: URL | StringPath): StringPath {
   return (url instanceof URL)
     ? fileURLToPath(url).replaceAll(/\\/g, '/')
     : url.replace(/^file:/, '');
+}
+
+/**
+ * Checks if the given string path is a Windows path.
+ *
+ * Before checking, the given path will be normalized first.
+ *
+ * @param p - The string path to be checked for.
+ * @returns   `true` if the given path is a Windows path, `false` otherwise.
+ * @see       {@link WIN32_PATH_PATTERN}
+ *
+ * @internal
+ */
+function isWin32Path(p: StringPath): boolean {
+  p = path.normalize(p);
+  return !!p && WIN32_PATH_PATTERN.test(p);
 }
 
 /**
