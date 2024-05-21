@@ -11,18 +11,19 @@
  */
 
 import * as fs from 'node:fs';
+import * as os from 'node:os';
 import * as path from 'node:path';
 import { URL, fileURLToPath } from 'node:url';
-import { lsTypes }  from './lsTypes';
 import type {
-  StringPath,
-  LsEntries,
-  LsResult,
-  LsOptions,
-  ResolvedLsOptions,
   DefaultLsOptions,
-  LsTypes
+  LsEntries,
+  LsOptions,
+  LsResult,
+  LsTypes,
+  ResolvedLsOptions,
+  StringPath
 } from '../types';
+import { lsTypes } from './lsTypes';
 
 type Unpack<A> = A extends Array<(infer U)> ? U : A;
 
@@ -90,6 +91,7 @@ export const defaultLsOptions: DefaultLsOptions = {
  * @see   {@link https://nodejs.org/api/url.html#urlfileurltopathurl url.fileURLToPath}
  *
  * @internal
+ * @deprecated
  */
 function fileUrlToPath(url: URL | StringPath): StringPath {
   if ((url instanceof URL && url.protocol !== 'file:')
