@@ -26,8 +26,8 @@ const assert = require('node:assert');
  * A custom class representing the error thrown by {@link module:simpletest~it} function.
  */
 class TestError extends Error {
-  constructor(message) {
-    super(message);  // Important
+  constructor(message, opts) {
+    super(message, opts);  // Important
     this.name = 'TestError';
   }
 }
@@ -47,7 +47,7 @@ async function it(desc, func, continueOnErr=false) {
     console.log(`  \x1b[92m\u2714 \x1b[0m\x1b[2m${desc}\x1b[0m`);
   } catch (err) {
     console.error(`  \x1b[91m\u2718 \x1b[0m${desc}\n`);
-    console.error(new TestError(err.message));
+    console.error(new TestError('Test failed!', { cause: err }));
     !!continueOnErr || process.exit(1);  // Force terminate the process
   }
 }

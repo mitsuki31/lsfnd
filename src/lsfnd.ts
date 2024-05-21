@@ -11,21 +11,37 @@
  */
 
 import * as fs from 'node:fs';
+import * as os from 'node:os';
 import * as path from 'node:path';
-import { isRegExp } from 'node:util';
-import { URL } from 'node:url';
-import { lsTypes }  from './lsTypes';
+import { URL, fileURLToPath } from 'node:url';
 import type {
-  StringPath,
-  LsEntries,
-  LsResult,
-  LsOptions,
-  ResolvedLsOptions,
   DefaultLsOptions,
-  LsTypes
+  LsEntries,
+  LsOptions,
+  LsResult,
+  LsTypes,
+  ResolvedLsOptions,
+  StringPath
 } from '../types';
+import { lsTypes } from './lsTypes';
 
 type Unpack<A> = A extends Array<(infer U)> ? U : A;
+
+/**
+ * A regular expression pattern to parse the file URL path,
+ * following the WHATWG URL Standard.
+ * 
+ * @see {@link https://url.spec.whatwg.org/ WHATWG URL Standard}
+ * @internal
+ */
+const FILE_URL_PATTERN: RegExp = /^file:\/\/\/?(?:[A-Za-z]:)?(?:\/[^\s\\]+)*(?:\/)?/;
+
+/**
+ * A regular expression pattern to parse and detect the Windows path.
+ *
+ * @internal
+ */
+const WIN32_PATH_PATTERN: RegExp = /^[A-Za-z]:?(?:\\|\/)(?:[^\\/:*?"<>|\r\n]+(?:\\|\/))*[^\\/:*?"<>|\r\n]*$/;
 
 /**
  * An object containing all default values of {@link LsOptions `LsOptions`} type.
@@ -75,13 +91,91 @@ export const defaultLsOptions: DefaultLsOptions = {
  * @see   {@link https://nodejs.org/api/url.html#urlfileurltopathurl url.fileURLToPath}
  *
  * @internal
+ * @deprecated
  */
 function fileUrlToPath(url: URL | StringPath): StringPath {
   if ((url instanceof URL && url.protocol !== 'file:')
       || (typeof url === 'string' && !/^file:(\/\/?|\.\.?\/*)/.test(url))) {
     throw new URIError('Invalid URL file scheme');
   }
-  return (url instanceof URL) ? url.pathname : url.replace(/^file:/, '');
+  return (url instanceof URL)
+    ? fileURLToPath(url).replaceAll(/\\/g, '/')
+    : url.replace(/^file:/, '');
+}
+
+/**
+ * Checks if the given string path is a Windows path.
+ *
+ * Before checking, the given path will be normalized first.
+ *
+ * @param p - The string path to be checked for.
+ * @returns   `true` if the given path is a Windows path, `false` otherwise.
+ * @see       {@link WIN32_PATH_PATTERN}
+ *
+ * @internal
+ */
+function isWin32Path(p: StringPath): boolean {
+  p = path.normalize(p);
+  return !!p && WIN32_PATH_PATTERN.test(p);
+}
+
+/**
+ * Resolves a file URL to a file path.
+ *
+ * @param {StringPath} p
+ *        The file URL to resolve. It should be a string representing
+ *        a valid file URL following the **WHATWG URL Standard**.
+ * @returns {StringPath}
+ *          The resolved file path. If the provided URL is valid,
+ *          it returns the corresponding file path.
+ * @throws {URIError}
+ *         If the provided file URL scheme is invalid. This can occur
+ *         if the URL scheme is not recognized or if it does not conform
+ *         to the expected format.
+ *
+ * @remarks
+ * This function is used to convert a file URL to a file path. It first checks
+ * if the provided URL matches the expected pattern for file URLs. If it does,
+ * it proceeds to resolve the URL to a file path. If the URL scheme is not recognized
+ * or is invalid, a `URIError` is thrown.
+ *
+ * If the provided URL is `'file://'` or `'file:///'`, it is replaced with the root directory
+ * path (in the current drive for Windows systems). Otherwise, the URL is parsed using the
+ * `fileURLToPath` function.
+ *
+ * If the operating system is not Windows and the provided URL contains a Windows-style path,
+ * or if the operating system is Windows and the URL does not start with 'file:', an error is
+ * thrown indicating an invalid file URL scheme.
+ * 
+ * @example
+ * // POSIX Path
+ * const fooPath = resolveFileURL('file:///path/to/foo.txt');
+ * console.log(filePath);  // Output: '/path/to/foo.txt'
+ *
+ * @example
+ * // Windows Path
+ * const projectsPath = resolveFileURL('file:///G:/Projects');
+ * console.log(projectsPath);  // Output: 'G:\\Projects'
+ *
+ * @see {@link https://url.spec.whatwg.org/ WHATWG URL Standard}
+ * @internal
+ */
+function resolveFileURL(p: StringPath): StringPath {
+  if (FILE_URL_PATTERN.test(p)) {
+    // If and only if the given path is 'file://' or 'file:///'
+    // then replace the path to root directory (in current drive for Windows systems).
+    // When the specified above URL path being passed to `fileURLPath` function,
+    // it throws an error due to non-absolute URL path was given.
+    if (/^file:(?:\/\/\/?)$/.test(p)) p = '/';
+    // Otherwise, parse the file URL path
+    else p = fileURLToPath(p);
+  } else if ((os.platform() !== 'win32'
+      && (isWin32Path(p) || !p.startsWith('file:')))
+      || (os.platform() === 'win32'
+        && !(isWin32Path(p) || p.startsWith('file:')))) {
+    throw new URIError('Invalid file URL scheme');
+  }
+  return p;
 }
 
 /**
@@ -306,24 +400,27 @@ export async function ls(
 ): Promise<LsResult> {
   let absdirpath: StringPath,
       reldirpath: StringPath;
+      
+  if (!(dirpath instanceof URL) && typeof dirpath !== 'string') {
+    throw new TypeError('Unknown type, expected a string or a URL object');
+  }
 
   if (dirpath instanceof URL) {
     if (dirpath.protocol !== 'file:') {
       throw new URIError(`Unsupported protocol: '${dirpath.protocol}'`);
     }
-    dirpath = dirpath.pathname;   // Extract the path (without the protocol)
-  } else if (typeof dirpath === 'string') {
-    if (/^[a-zA-Z]+:/.test(dirpath)) {
-      if (!dirpath.startsWith('file:')) {
-        throw new URIError(`Unsupported protocol: '${dirpath.split(':')[0]}:'`);
-      }
-      dirpath = fileUrlToPath(dirpath);
-    }
-  } else {
-    throw new TypeError('Unknown type, expected a string or an URL object');
+    // We need to use `fileURLToPath` to ensure it converted to string path
+    // correctly on Windows platform, after that replace all Windows path separator ('\')
+    // with POSIX path separator ('/').
+    dirpath = fileURLToPath(dirpath).replaceAll(/\\/g, '/');
+  } else if (typeof dirpath === 'string' && /^[a-zA-Z]+:/.test(dirpath)) {
+    dirpath = resolveFileURL(dirpath);
   }
 
-  if (isRegExp(options)) {
+  // Normalize the given path
+  dirpath = path.normalize(dirpath);
+
+  if (options instanceof RegExp) {
     // Store the regex value of `options` to temporary variable for `match` option
     const temp: RegExp = new RegExp(options.source) || options;
     options = <LsOptions> resolveOptions(null);  // Use the default options
@@ -337,13 +434,13 @@ export async function ls(
   }
 
   // Check and resolve the `rootDir` option
-  if (options.rootDir
-    && (options.rootDir instanceof URL
-      || (typeof options.rootDir === 'string'
-        && /^[a-zA-Z]+:/.test(options.rootDir))
-    )
-  ) {
-    options.rootDir = fileUrlToPath(options.rootDir);
+  if (options.rootDir instanceof URL) {
+    if (options.rootDir.protocol !== 'file:') {
+      throw new URIError(`Unsupported protocol: '${options.rootDir.protocol}'`);
+    }
+    options.rootDir = fileURLToPath(options.rootDir).replaceAll(/\\/g, '/');
+  } else if (typeof dirpath === 'string' && /^[a-zA-Z]+:/.test(options.rootDir!)) {
+    options.rootDir = resolveFileURL(options.rootDir!);
   }
 
   // Resolve the absolute and relative of the dirpath argument
@@ -370,19 +467,57 @@ export async function ls(
     result = await Promise.all(
       utf8Entries.map(async function (entry: StringPath): Promise<(StringPath | null)> {
         entry = path.join(absdirpath, entry);
-        const stats: fs.Stats = await fs.promises.stat(entry);
-        let resultType: boolean = false;
+        let stats: fs.Stats | null = null;
+        let resultType: boolean = false,
+            isDir:      boolean = false,
+            isFile:     boolean = false;
+
+        // Try to retrieve the information of file system using `fs.stat`
+        try {
+          stats = await fs.promises.stat(entry);
+        } catch (e: unknown) {
+          // Attempt to open the entry using `fs.opendir` if the file system could not be
+          // accessed because of a permission error or maybe access error. The function
+          // is meant to be used with directories exclusively, which is helpful for
+          // determining if an entry is a directory or a regular file. We can conclude that
+          // the entry is a regular file if it throws an error. In this method, we can
+          // avoid an internal error that occurs when try to access a read-protected file system,
+          // such the "System Volume Information" directory on all Windows drives.
+          try {
+            // Notably, we do not want to use any synchronous functions and instead
+            // want the process to be asynchronous.
+            const dir = await fs.promises.opendir(entry);
+            isDir = true;  // Detected as a directory
+            await dir.close();
+          } catch (eDir: unknown) {
+            // If and only if the thrown error have a code "ENOTDIR",
+            // then it treats the entry as a regular file. Otherwise, throw the error.
+            if (eDir instanceof Error && ('code' in eDir && eDir.code === 'ENOTDIR'))
+              isFile = true;  // Detected as a regular file
+            else throw eDir;
+          }
+        }
 
         switch (type) {
           case lsTypes.LS_D:
           case 'LS_D':
-            resultType = (!stats.isFile() && stats.isDirectory());
+            resultType = (
+              !(stats?.isFile() || isFile)
+                && (stats?.isDirectory() || isDir)
+            );
             break;
           case lsTypes.LS_F:
           case 'LS_F':
-            resultType = (stats.isFile() && !stats.isDirectory());
+            resultType = (
+              (stats?.isFile() || isFile)
+                && !(stats?.isDirectory() || isDir)
+            );
             break;
-          default: resultType = (stats.isFile() || stats.isDirectory());
+          default:
+            resultType = (
+              (stats?.isFile() || isFile)
+                || (stats?.isDirectory() || isDir)
+            );
         }
 
         return ((
@@ -419,7 +554,7 @@ export async function ls(
   // Encode back the entries to the specified encoding
   if (result && options?.encoding! !== 'utf8')
     result = encodeTo(result, 'utf8', options.encoding!);
-  return result;
+  return (!!result ? result.sort() : result);
 }
 
 /**
