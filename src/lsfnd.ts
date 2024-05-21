@@ -169,7 +169,8 @@ function resolveFileURL(p: StringPath): StringPath {
     if (/^file:(?:\/\/\/?)$/.test(p)) p = '/';
     // Otherwise, parse the file URL path
     else p = fileURLToPath(p);
-  } else if ((os.platform() !== 'win32' && isWin32Path(p))
+  } else if ((os.platform() !== 'win32'
+      && (isWin32Path(p) || !p.startsWith('file:')))
       || (os.platform() === 'win32'
         && !(isWin32Path(p) || p.startsWith('file:')))) {
     throw new URIError('Invalid file URL scheme');
