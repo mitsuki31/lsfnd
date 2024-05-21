@@ -25,7 +25,9 @@
     "build:docs": "typedoc --options typedoc.config.js",
     "test": "node test/lsfnd.spec.cjs && node test/lsfnd.spec.mjs",
     "test:cjs": "node test/lsfnd.spec.cjs",
-    "test:mjs": "node test/lsfnd.spec.mjs"
+    "test:mjs": "node test/lsfnd.spec.mjs",
+    "prepublishOnly": "ts-node scripts/build.ts --overwrite",
+    "prepack": "npm test"
   },
   "repository": {
     "type": "git",
