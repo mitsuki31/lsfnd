@@ -119,6 +119,64 @@ function isWin32Path(p: StringPath): boolean {
 }
 
 /**
+ * Resolves a file URL to a file path.
+ *
+ * @param {StringPath} p
+ *        The file URL to resolve. It should be a string representing
+ *        a valid file URL following the **WHATWG URL Standard**.
+ * @returns {StringPath}
+ *          The resolved file path. If the provided URL is valid,
+ *          it returns the corresponding file path.
+ * @throws {URIError}
+ *         If the provided file URL scheme is invalid. This can occur
+ *         if the URL scheme is not recognized or if it does not conform
+ *         to the expected format.
+ *
+ * @remarks
+ * This function is used to convert a file URL to a file path. It first checks
+ * if the provided URL matches the expected pattern for file URLs. If it does,
+ * it proceeds to resolve the URL to a file path. If the URL scheme is not recognized
+ * or is invalid, a `URIError` is thrown.
+ *
+ * If the provided URL is `'file://'` or `'file:///'`, it is replaced with the root directory
+ * path (in the current drive for Windows systems). Otherwise, the URL is parsed using the
+ * `fileURLToPath` function.
+ *
+ * If the operating system is not Windows and the provided URL contains a Windows-style path,
+ * or if the operating system is Windows and the URL does not start with 'file:', an error is
+ * thrown indicating an invalid file URL scheme.
+ * 
+ * @example
+ * // POSIX Path
+ * const fooPath = resolveFileURL('file:///path/to/foo.txt');
+ * console.log(filePath);  // Output: '/path/to/foo.txt'
+ *
+ * @example
+ * // Windows Path
+ * const projectsPath = resolveFileURL('file:///G:/Projects');
+ * console.log(projectsPath);  // Output: 'G:\\Projects'
+ *
+ * @see {@link https://url.spec.whatwg.org/ WHATWG URL Standard}
+ * @internal
+ */
+function resolveFileURL(p: StringPath): StringPath {
+  if (FILE_URL_PATTERN.test(p)) {
+    // If and only if the given path is 'file://' or 'file:///'
+    // then replace the path to root directory (in current drive for Windows systems).
+    // When the specified above URL path being passed to `fileURLPath` function,
+    // it throws an error due to non-absolute URL path was given.
+    if (/^file:(?:\/\/\/?)$/.test(p)) p = '/';
+    // Otherwise, parse the file URL path
+    else p = fileURLToPath(p);
+  } else if ((os.platform() !== 'win32' && isWin32Path(p))
+      || (os.platform() === 'win32'
+        && !(isWin32Path(p) || p.startsWith('file:')))) {
+    throw new URIError('Invalid file URL scheme');
+  }
+  return p;
+}
+
+/**
  * Checks if a provided type matches any of the allowed types.
  *
  * This function verifies if a provided `type` argument matches any of the
