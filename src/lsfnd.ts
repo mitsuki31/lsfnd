@@ -12,7 +12,6 @@
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { isRegExp } from 'node:util';
 import { URL, fileURLToPath } from 'node:url';
 import { lsTypes }  from './lsTypes';
 import type {
@@ -398,6 +397,10 @@ export async function ls(
 ): Promise<LsResult> {
   let absdirpath: StringPath,
       reldirpath: StringPath;
+      
+  if (!(dirpath instanceof URL) && typeof dirpath !== 'string') {
+    throw new TypeError('Unknown type, expected a string or a URL object');
+  }
 
   if (dirpath instanceof URL) {
     if (dirpath.protocol !== 'file:') {
@@ -407,18 +410,14 @@ export async function ls(
     // correctly on Windows platform, after that replace all Windows path separator ('\')
     // with POSIX path separator ('/').
     dirpath = fileURLToPath(dirpath).replaceAll(/\\/g, '/');
-  } else if (typeof dirpath === 'string') {
-    if (/^[a-zA-Z]+:/.test(dirpath)) {
-      if (!dirpath.startsWith('file:')) {
-        throw new URIError(`Unsupported protocol: '${dirpath.split(':')[0]}:'`);
-      }
-      dirpath = fileUrlToPath(dirpath);
-    }
-  } else {
-    throw new TypeError('Unknown type, expected a string or an URL object');
+  } else if (typeof dirpath === 'string' && /^[a-zA-Z]+:/.test(dirpath)) {
+    dirpath = resolveFileURL(dirpath);
   }
 
-  if (isRegExp(options)) {
+  // Normalize the given path
+  dirpath = path.normalize(dirpath);
+
+  if (options instanceof RegExp) {
     // Store the regex value of `options` to temporary variable for `match` option
     const temp: RegExp = new RegExp(options.source) || options;
     options = <LsOptions> resolveOptions(null);  // Use the default options
@@ -432,13 +431,13 @@ export async function ls(
   }
 
   // Check and resolve the `rootDir` option
-  if (options.rootDir
-    && (options.rootDir instanceof URL
-      || (typeof options.rootDir === 'string'
-        && /^[a-zA-Z]+:/.test(options.rootDir))
-    )
-  ) {
-    options.rootDir = fileUrlToPath(options.rootDir);
+  if (options.rootDir instanceof URL) {
+    if (options.rootDir.protocol !== 'file:') {
+      throw new URIError(`Unsupported protocol: '${options.rootDir.protocol}'`);
+    }
+    options.rootDir = fileURLToPath(options.rootDir).replaceAll(/\\/g, '/');
+  } else if (typeof dirpath === 'string' && /^[a-zA-Z]+:/.test(options.rootDir!)) {
+    options.rootDir = resolveFileURL(options.rootDir!);
   }
 
   // Resolve the absolute and relative of the dirpath argument
