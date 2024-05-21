@@ -466,19 +466,57 @@ export async function ls(
     result = await Promise.all(
       utf8Entries.map(async function (entry: StringPath): Promise<(StringPath | null)> {
         entry = path.join(absdirpath, entry);
-        const stats: fs.Stats = await fs.promises.stat(entry);
-        let resultType: boolean = false;
+        let stats: fs.Stats | null = null;
+        let resultType: boolean = false,
+            isDir:      boolean = false,
+            isFile:     boolean = false;
+
+        // Try to retrieve the information of file system using `fs.stat`
+        try {
+          stats = await fs.promises.stat(entry);
+        } catch (e: unknown) {
+          // Attempt to open the entry using `fs.opendir` if the file system could not be
+          // accessed because of a permission error or maybe access error. The function
+          // is meant to be used with directories exclusively, which is helpful for
+          // determining if an entry is a directory or a regular file. We can conclude that
+          // the entry is a regular file if it throws an error. In this method, we can
+          // avoid an internal error that occurs when try to access a read-protected file system,
+          // such the "System Volume Information" directory on all Windows drives.
+          try {
+            // Notably, we do not want to use any synchronous functions and instead
+            // want the process to be asynchronous.
+            const dir = await fs.promises.opendir(entry);
+            isDir = true;  // Detected as a directory
+            await dir.close();
+          } catch (eDir: unknown) {
+            // If and only if the thrown error have a code "ENOTDIR",
+            // then it treats the entry as a regular file. Otherwise, throw the error.
+            if (eDir instanceof Error && ('code' in eDir && eDir.code === 'ENOTDIR'))
+              isFile = true;  // Detected as a regular file
+            else throw eDir;
+          }
+        }
 
         switch (type) {
           case lsTypes.LS_D:
           case 'LS_D':
-            resultType = (!stats.isFile() && stats.isDirectory());
+            resultType = (
+              !(stats?.isFile() || isFile)
+                && (stats?.isDirectory() || isDir)
+            );
             break;
           case lsTypes.LS_F:
           case 'LS_F':
-            resultType = (stats.isFile() && !stats.isDirectory());
+            resultType = (
+              (stats?.isFile() || isFile)
+                && !(stats?.isDirectory() || isDir)
+            );
             break;
-          default: resultType = (stats.isFile() || stats.isDirectory());
+          default:
+            resultType = (
+              (stats?.isFile() || isFile)
+                || (stats?.isDirectory() || isDir)
+            );
         }
 
         return ((
@@ -515,7 +553,7 @@ export async function ls(
   // Encode back the entries to the specified encoding
   if (result && options?.encoding! !== 'utf8')
     result = encodeTo(result, 'utf8', options.encoding!);
-  return result;
+  return (!!result ? result.sort() : result);
 }
 
 /**
