@@ -9,7 +9,7 @@ const { ls, lsFiles, lsDirs } = require('..');
 const { it, rejects, doesNotReject, deepEq } = require('./lib/simpletest');
 
 const rootDir = path.resolve('..');
-const rootDirPosix = path.posix.resolve('..');
+const rootDirPosix = rootDir.replaceAll(path.sep, '/');
 
 console.log(`\n\x1b[1m${path.basename(__filename)}:\x1b[0m`);
 
@@ -38,7 +38,7 @@ it('list root directory using URL object', async () => {
 }, false);
 
 it('list root directory using file URL path', async () => {
-  await doesNotReject(ls('file:'.concat(rootDirPosix)), URIError);
+  await doesNotReject(ls(pathToFileURL(rootDirPosix)), URIError);
 }, false);
 
 it('test if the options argument allows explicit null value', async () => {
@@ -63,7 +63,7 @@ it('throws an error if the given directory path not exist', async () => {
 }, false);
 
 it('throws a `URIError` if the given file URL path using unsupported protocol',
-  async () => await rejects(ls('http:'.concat(rootDirPosix)), URIError),
+  async () => await rejects(ls('http:///'.concat(rootDirPosix)), URIError),
   false
 );
 
