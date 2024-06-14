@@ -1,6 +1,6 @@
 {
   "name": "lsfnd",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "title": "LSFND",
   "description": "A lightweight Node.js library to list files and directories with a simple and efficient way",
   "main": "dist/index.js",
