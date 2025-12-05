@@ -4,20 +4,20 @@
  * The preceding behavior can be set to either overwrite the initial generation
  * of transpiled files or keep them distinct.
  *
- * Possible options choices for enabling the overwrite operation:
- * - `-ow`
- * - `--overwrite`
+ * **Options:**
  *
- * Possible options choices to run the minification only:
- * - `-m`
- * - `--minify`
+ * - `-ow`, `--overwrite`  
+ *   Overwrites if the transpiled files already exists.
+ * - `-m`, `--minify`  
+ *   Enables minification while transpiling the source files.
  *
- * Example usage:
+ * **Command:**
+ *
  * ```bash
- * npx ts-node scripts/build.ts [-ow|--overwrite] [-m|--minify]
+ * npx tsx scripts/build.ts [-ow|--overwrite] [-m|--minify]
  * ```
  *
- * Copyright (c) 2024 Ryuu Mitsuki. All rights reserved.
+ * Copyright (c) 2024-2025 Ryuu Mitsuki. All rights reserved.
  *
  * @module  scripts/build
  * @author  Ryuu Mitsuki (https://github.com/mitsuki31)
@@ -29,26 +29,28 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { spawn, type ChildProcess } from 'node:child_process';
 import * as esbuild from 'esbuild';
-import { type BuildPropConfig } from '../types/build.prop';
-
+import * as buildProp from '../build.prop';
 import * as pkg from '../package.json';
-import * as tsconfig from '../tsconfig.json';
-const buildProp: BuildPropConfig = require('../build.prop');
+
+const SUPPORTED_OPTIONS = {
+  overwrite: ['-ow', '--overwrite'],
+  minify: ['-m', '--minify']
+} as const;
+const SUPPORTED_OPTIONS_SET = new Set(...Object.values(SUPPORTED_OPTIONS));
 
 /** @internal */
 function fixPathSep(p: string) {
   return p.replace(/[\/\\]/g, path.sep);
 }
 
-const args: Array<string> = process.argv.slice(2);
+const args: string[] = process.argv.slice(2);
 const rootDir: string = fixPathSep(buildProp.rootDir);
-const buildDir: string = fixPathSep(buildProp.outDir);
-const tscCmd: Array<string> = [
+const tscCmd = [
   path.join(rootDir, 'node_modules', '.bin', 'tsc'),
   '--project',
   fixPathSep(buildProp.tsconfig)
-];
-const includeFiles: Array<string> = Array.from(
+] as const;
+const includeFiles: string[] = Array.from(
   // Convert to set first to remove any duplicates
   new Set<string>(buildProp.minify.files.map((file: string): string => {
     return fixPathSep(file);  // Fix the path separator
@@ -67,9 +69,9 @@ const legalComments: string = `
 `.trimStart();
 
 /** @internal */
-async function minify(files: Array<string>): Promise<void> {
+async function minify(files: string[]): Promise<void> {
   // Read contents file in the list of included files for minification
-  const filesContents: Array<string> = await Promise.all(
+  const filesContents: string[] = await Promise.all(
     files.map(async function (file: string): Promise<string> {
       return (await fs.promises.readFile(path.resolve(file), 'utf8'));
     })
@@ -82,27 +84,28 @@ async function minify(files: Array<string>): Promise<void> {
       idx: number
     ): Promise<void> {
       const base: string = path.basename(files[idx]);
-      const ext: string = base.split('.').pop()! || '';
-      const minifiedCode: string = (await esbuild.transform(content, {
-        minify: true
-      })).code;
-      const outFile: string =
-        files[idx].replace(RegExp(`\\.${ext!}$`), `.min.${ext}`);
 
       process.stdout.write(`Minifying "${files[idx]}" ...`);
-      fs.writeFileSync(
+      const minifiedCode: string = (await esbuild.transform(content, {
+        banner: legalComments,
+        // NOTE: Only minify the identifiers
+        minifyIdentifiers: true
+      })).code;
+      const outFile = files[idx];
+
+      await fs.promises.writeFile(
         path.resolve(outFile),
-        legalComments.concat(minifiedCode),
+        minifiedCode,
         'utf8'
       );
       console.log(' Done');
 
       // Overwrite the original file with the minified version only if
       // the special argument ('-ow' | `--overwrite`) specified
-      if (args.includes('-ow') || args.includes('--overwrite')) {
+      if (args.some(o => (SUPPORTED_OPTIONS.overwrite as readonly string[]).includes(o))) {
         const origin: string = path.resolve(files[idx]);
         process.stdout.write(`Overwriting "${files[idx]}" with minified version ...`);
-        fs.renameSync(path.resolve(outFile), origin);
+        await fs.promises.rename(path.resolve(outFile), origin);
         console.log(' Done');
       }
       return;  // Explicitly return void
@@ -111,10 +114,6 @@ async function minify(files: Array<string>): Promise<void> {
 }
 
 (async function (): Promise<void> {
-  if (args.includes('-m') || args.includes('--minify')) {
-    return await minify(includeFiles);
-  }
-
   // Transpile the TypeScript files
   console.log('\nSpawning child process ...');
   console.log(`> ${path.basename(tscCmd[0])} ${tscCmd.slice(1).join(' ')}\n`);
@@ -126,14 +125,16 @@ async function minify(files: Array<string>): Promise<void> {
   });
 
   tsc.on('error', function (err: Error): void {
-    console.error('Error occured in child process:');
-    console.error(err);
+    console.error('Error occured in child process:', err);
+    process.exit(1);  // Exit immediately
   });
   tsc.on('close', async function (code: number): Promise<void> {
     console.log('\nChild process exited with code:', code, '\n');
-    if (code !== 0) return;
+    if (code !== 0) process.exit(1);  // Better exit 1 than return
 
-    await minify(includeFiles);
+    if (args.some(o => (SUPPORTED_OPTIONS.minify as readonly string[]).includes(o))) {
+      await minify(includeFiles);
+    }
     console.log('Build completed.');
   });
 })();
