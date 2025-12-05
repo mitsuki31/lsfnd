@@ -50,7 +50,7 @@
     "node": ">=16.20.x"
   },
   "devDependencies": {
-    "@types/node": "^20.12.4",
+    "@types/node": "^20.19.25",
     "esbuild": "^0.20.2",
     "ts-node": "~10.9.2",
     "typedoc-material-theme": "^1.0.2",
