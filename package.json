@@ -19,7 +19,7 @@
   },
   "scripts": {
     "dev": "tsx scripts/build.ts",
-    "build": "tsx scripts/build.ts --minify --overwrite",
+    "build": "tsx scripts/build.ts --minify",
     "docs": "npm run-script build:docs",
     "build:docs": "typedoc --options typedoc.config.js",
     "test": "npm run test:cjs && npm run test:mjs",

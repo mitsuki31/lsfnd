@@ -1,21 +1,25 @@
 /**
- * A script that minifies transpiled TypeScript files. The minified scripts are
- * saved implicitly with the `.min.js` extension in the specified output directory.
+ * A script that builds the project and optionally minifies the transpiled TypeScript files.
+ * The minified scripts are saved implicitly with the `.min.js` extension in the specified
+ * output directory.
+ *
  * The preceding behavior can be set to either overwrite the initial generation
  * of transpiled files or keep them distinct.
  *
  * **Options:**
  *
- * - `-ow`, `--overwrite`  
- *   Overwrites if the transpiled files already exists.
  * - `-m`, `--minify`  
  *   Enables minification while transpiling the source files.
  *
  * **Command:**
  *
  * ```bash
- * npx tsx scripts/build.ts [-ow|--overwrite] [-m|--minify]
+ * npx tsx scripts/build.ts [-m|--minify] [-ow|--overwrite]
  * ```
+ *
+ * If no options specified, it will only build the project.
+ *
+ * ---
  *
  * Copyright (c) 2024-2025 Ryuu Mitsuki. All rights reserved.
  *
@@ -27,14 +31,14 @@
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { performance } from 'node:perf_hooks';
 import { spawn, type ChildProcess } from 'node:child_process';
 import * as esbuild from 'esbuild';
 import * as buildProp from '../build.prop';
 import * as pkg from '../package.json';
 
 const SUPPORTED_OPTIONS = {
-  overwrite: ['-ow', '--overwrite'],
-  minify: ['-m', '--minify']
+  minify: ['-m', '--minify'],
 } as const;
 const SUPPORTED_OPTIONS_SET = new Set(...Object.values(SUPPORTED_OPTIONS));
 
@@ -77,43 +81,27 @@ async function minify(files: string[]): Promise<void> {
     })
   );
 
-  // Minification process
-  await Promise.all(
-    filesContents.map(async function (
-      content: string,
-      idx: number
-    ): Promise<void> {
-      const base: string = path.basename(files[idx]);
+  for (const content of filesContents) {
+    const idx = filesContents.indexOf(content);
 
-      process.stdout.write(`Minifying "${files[idx]}" ...`);
-      const minifiedCode: string = (await esbuild.transform(content, {
-        banner: legalComments,
-        // NOTE: Only minify the identifiers
-        minifyIdentifiers: true
-      })).code;
-      const outFile = files[idx];
+    process.stdout.write(`Minifying "${files[idx]}" ...`);
+    const minifiedResult = await esbuild.transform(content, {
+      banner: legalComments,
+      // NOTE: Only minify the identifiers
+      minifyIdentifiers: true
+    });
+    const minifiedCode = minifiedResult.code;
+    const outFile = files[idx];
 
-      await fs.promises.writeFile(
-        path.resolve(outFile),
-        minifiedCode,
-        'utf8'
-      );
-      console.log(' Done');
-
-      // Overwrite the original file with the minified version only if
-      // the special argument ('-ow' | `--overwrite`) specified
-      if (args.some(o => (SUPPORTED_OPTIONS.overwrite as readonly string[]).includes(o))) {
-        const origin: string = path.resolve(files[idx]);
-        process.stdout.write(`Overwriting "${files[idx]}" with minified version ...`);
-        await fs.promises.rename(path.resolve(outFile), origin);
-        console.log(' Done');
-      }
-      return;  // Explicitly return void
-    })
-  );
+    // Writing file
+    await fs.promises.writeFile(outFile, minifiedCode, 'utf8');
+    console.log(' Done');
+  }
 }
 
 (async function (): Promise<void> {
+  const buildTimeStart = performance.now();
+
   // Transpile the TypeScript files
   console.log('\nSpawning child process ...');
   console.log(`> ${path.basename(tscCmd[0])} ${tscCmd.slice(1).join(' ')}\n`);
@@ -135,6 +123,10 @@ async function minify(files: string[]): Promise<void> {
     if (args.some(o => (SUPPORTED_OPTIONS.minify as readonly string[]).includes(o))) {
       await minify(includeFiles);
     }
-    console.log('Build completed.');
+
+    const buildTimeEnd = performance.now();
+    console.log(
+      `Build completed in \x1b[96m${(buildTimeEnd - buildTimeStart).toFixed()}ms\x1b[0m.`
+    );
   });
 })();
