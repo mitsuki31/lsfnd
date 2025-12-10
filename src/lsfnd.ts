@@ -2,8 +2,6 @@
  * A module that offers some functions to read and list files and/or directories
  * in a specified directory with support filtering using regular expression pattern.
  *
- * Copyright (c) 2024 Ryuu Mitsuki. All rights reserved.
- *
  * @module  lsfnd
  * @author  Ryuu Mitsuki (https://github.com/mitsuki31)
  * @since   0.1.0
@@ -178,6 +176,10 @@ function resolveFileURL(p: StringPath): StringPath {
   return p;
 }
 
+function resolveMatchExclude(val: StringPath | RegExp): RegExp {
+  return typeof val === 'string' ? new RegExp(val) : val;
+}
+
 /**
  * Checks if a provided type matches any of the allowed types.
  *
@@ -224,18 +226,40 @@ function checkType(
 }
 
 /**
- * Resolves the given `options` ({@link LsOptions}).
+ * Resolves the given `options` into a fully defined {@link ResolvedLsOptions} object.
  *
- * @param options - An object represents the options to be resolved. Set to `null`
- *                  or `undefined` to gets the default options.
- * @returns A new object represents the resolved options. Returns the default
- *          options if the `options` parameter not specified or `null`.
+ * This function takes an optional `options` parameter, which can be an {@link LsOptions} object,
+ * a {@link RegExp} to specify the match pattern, or `null`/`undefined` to use defaults.
+ * If a `RegExp` is provided, it creates a resolved options object with default values except
+ * for the `match` field, which is set to the provided `RegExp`.
+ * If `options` is an object, it merges the provided options with the defaults, ensuring all
+ * properties are defined. Otherwise, it returns the default options.
+ *
+ * @param options - The options to resolve. Can be an {@link LsOptions} object, a {@link RegExp}
+ *                  to set the match pattern, or `null`/`undefined` for defaults.
+ * @returns A new {@link ResolvedLsOptions} object with all properties defined.
+ *
+ * @example
+ * // Using default options
+ * const opts = resolveOptions(null);
+ * console.log(opts.match); // /.+/
+ *
+ * @example
+ * // Using a RegExp for match
+ * const opts = resolveOptions(/\.js$/);
+ * console.log(opts.match); // /\.js$/
  *
  * @since 1.0.0
  * @internal
  */
-function resolveOptions(options?: LsOptions | null): ResolvedLsOptions {
-  return (!options || (options && typeof options !== 'object')) ? defaultLsOptions : {
+function resolveOptions(options?: LsOptions | RegExp | null): ResolvedLsOptions {
+  if (options instanceof RegExp) {
+    const resolved = { ...defaultLsOptions };
+    resolved.match = options;
+    return resolved;
+  }
+
+  return (!options || (options && typeof options !== 'object')) ? { ...defaultLsOptions } : {
     encoding: options?.encoding?.trim() as BufferEncoding ?? defaultLsOptions.encoding,
     recursive: options?.recursive ?? defaultLsOptions.recursive,
     match: options?.match ?? defaultLsOptions.match,
@@ -318,6 +342,7 @@ function encodeTo(
     return Buffer.from(v, from).toString(to);
   });
 }
+
 
 /**
  * Lists files and/or directories in a specified directory path, filtering by a
@@ -402,6 +427,21 @@ export async function ls(
   let reldirpath: StringPath;
   const lsTypesValues = Object.fromEntries(Object.entries(lsTypes));
 
+  // Resolve the options
+  if (!(
+    options instanceof RegExp ||
+    (!options || (typeof options === 'object' && !Array.isArray(options)))))
+  {
+    throw new TypeError("Unknown type of 'options': "
+      + (Array.isArray(options) ? 'array' : typeof options));
+  }
+
+  const resOptions = resolveOptions(options);
+  const { encoding: usedEncoding } = resOptions;
+  let { match: _match, exclude: _exclude } = resOptions;
+  const match = resolveMatchExclude(_match);
+  const exclude = _exclude ? resolveMatchExclude(_exclude) : undefined;
+
   if (!(dirpath instanceof URL) && typeof dirpath !== 'string') {
     throw new TypeError('Unknown type, expected a string or a URL object');
   }
@@ -421,34 +461,21 @@ export async function ls(
   // Normalize the given path
   dirpath = path.normalize(dirpath);
 
-  if (options instanceof RegExp) {
-    // Store the regex value of `options` to temporary variable for `match` option
-    const temp: RegExp = new RegExp(options.source) || options;
-    options = resolveOptions(null);  // Use the default options
-    options.match = temp;  // Reassign the `match` field
-  } else if (!options || (typeof options === 'object' && !Array.isArray(options))) {
-    // Resolve the options, even it is not specified
-    options = resolveOptions(options);
-  } else {
-    throw new TypeError("Unknown type of 'options': "
-      + (Array.isArray(options) ? 'array' : typeof options));
-  }
-
   // Check and resolve the `rootDir` option
-  if (options.rootDir instanceof URL) {
-    if (options.rootDir.protocol !== 'file:') {
-      throw new URIError(`Unsupported protocol: '${options.rootDir.protocol}'`);
+  if (resOptions.rootDir instanceof URL) {
+    if (resOptions.rootDir.protocol !== 'file:') {
+      throw new URIError(`Unsupported protocol: '${resOptions.rootDir.protocol}'`);
     }
-    options.rootDir = fileURLToPath(options.rootDir).replaceAll(/\\/g, '/');
-  } else if (typeof dirpath === 'string' && /^[a-zA-Z]+:/.test(options.rootDir!)) {
-    options.rootDir = resolveFileURL(options.rootDir!);
+    resOptions.rootDir = fileURLToPath(resOptions.rootDir).replaceAll(/\\/g, '/');
+  } else if (typeof dirpath === 'string' && /^[a-zA-Z]+:/.test(resOptions.rootDir!)) {
+    resOptions.rootDir = resolveFileURL(resOptions.rootDir!);
   }
 
   // Resolve the absolute and relative of the dirpath argument
   absdirpath = path.isAbsolute(dirpath)
     ? dirpath
     : path.posix.resolve(dirpath);
-  reldirpath = path.relative(options.rootDir ?? process.cwd(), absdirpath);;
+  reldirpath = path.relative(resOptions.rootDir ?? process.cwd(), absdirpath);;
 
   // Check the type argument
   checkType(type, [ ...Object.values(lsTypes), 0, null, undefined ]);
@@ -457,14 +484,12 @@ export async function ls(
   try {
     // Read the specified directory path recursively
     const entries: LsEntries = await fs.promises.readdir(absdirpath, {
-      // FIXME
-      encoding: options?.encoding || 'utf8',
-      recursive: options?.recursive
+      encoding: usedEncoding,
+      recursive: Boolean(resOptions.recursive)
     });
     // Declare the copy of the entries with UTF-8 encoding to be used by `fs.stat`,
     // this way we prevent the error due to invalid path thrown by `fs.stat` itself.
-    // FIXME
-    const utf8Entries: LsEntries = encodeTo(entries, options?.encoding, 'utf8');
+    const utf8Entries: LsEntries = encodeTo(entries, usedEncoding, 'utf8');
 
     // Filter the entries
     result = await Promise.all(
@@ -525,6 +550,7 @@ export async function ls(
             break;
           case lsTypes.LS_A:
           case lsTypesValues[String(lsTypes.LS_A)]:
+          case (0 as lsTypes):  // Special case
             resultType = (
               (stats?.isFile() || isFile)
                 || (stats?.isDirectory() || isDir)
@@ -535,17 +561,14 @@ export async function ls(
         }
 
         return ((
-          resultType && (
-            options.match?.test(entry)  // FIXME
-              && (options.exclude ? !options.exclude.test(entry) : true)  // FIXME
-          )
+          resultType && (match.test(entry)  && (exclude ? !exclude.test(entry) : true))
         )
           ? (
             // *** High priority
-            (options.absolute && (options.basename || !options.basename))
+            (resOptions.absolute && (resOptions.basename || !resOptions.basename))
                 ? entry  // already an absolute path
                 // *** Medium priority
-                : (!options.absolute && options.basename)
+                : (!resOptions.absolute && resOptions.basename)
                   ? path.basename(entry)  // get its basename
                   // *** Low priority
                   // convert back to the relative path
@@ -566,9 +589,9 @@ export async function ls(
   }
 
   // Encode back the entries to the specified encoding
-  if (result && options?.encoding !== 'utf8')
-    // FIXME
-    result = encodeTo(result, 'utf8', options.encoding);
+  if (result && usedEncoding !== 'utf8') {
+    result = encodeTo(result, 'utf8', usedEncoding);
+  }
   return (result ? result.sort() : result);
 }
 
