@@ -25,12 +25,12 @@ import type {
 } from '../types';
 import { lsTypes } from './lsTypes';
 
-type Unpack<A> = A extends Array<(infer U)> ? U : A;
+type Unpack<A> = A extends (infer U)[] ? U : A;
 
 /**
  * A regular expression pattern to parse the file URL path,
  * following the WHATWG URL Standard.
- * 
+ *
  * @see {@link https://url.spec.whatwg.org/ WHATWG URL Standard}
  * @internal
  */
@@ -58,7 +58,7 @@ export const defaultLsOptions: DefaultLsOptions = {
   rootDir: process.cwd(),
   absolute: false,
   basename: false
-} as const;
+} satisfies DefaultLsOptions;
 
 /**
  * Converts a file URL to a file path.
@@ -115,7 +115,7 @@ function fileUrlToPath(url: URL | StringPath): StringPath {
  * @internal
  */
 function isWin32Path(p: StringPath): boolean {
-  p = path.normalize(p);
+  p = path.normalize(p.trim());
   return !!p && WIN32_PATH_PATTERN.test(p);
 }
 
@@ -194,9 +194,9 @@ function resolveFileURL(p: StringPath): StringPath {
  * @since 1.0.0
  * @internal
  */
-function checkType<N extends null | undefined>(
-  type: LsTypes | N,
-  validTypes: Array<(string | number | N)>
+function checkType(
+  type: LsTypes | null | undefined,
+  validTypes: (string | number | null | undefined)[]
 ): void {
   function joinAll(arr: (typeof validTypes), delim: string): string {
     let str: string = '';
@@ -216,7 +216,7 @@ function checkType<N extends null | undefined>(
 
   if (!match) {
     throw new TypeError(
-      `Invalid 'type' value of ${<string> type} ('${typeof type}'). Valid type is "${
+      `Invalid 'type' value of ${type} ('${typeof type}'). Valid type is "${
         joinAll(validTypes.sort(), ' | ')
       }"`);
   }
@@ -234,16 +234,16 @@ function checkType<N extends null | undefined>(
  * @since 1.0.0
  * @internal
  */
-function resolveOptions(options: LsOptions | null | undefined): ResolvedLsOptions {
-  return <ReturnType<(typeof resolveOptions)>> (!options ? defaultLsOptions : {
-    encoding: options?.encoding || defaultLsOptions.encoding,
-    recursive: options?.recursive || defaultLsOptions.recursive,
-    match: options?.match || defaultLsOptions.match,
-    exclude: options?.exclude || defaultLsOptions.exclude,
-    rootDir: options?.rootDir || defaultLsOptions.rootDir,
-    absolute: options?.absolute || defaultLsOptions.absolute,
-    basename: options?.basename || defaultLsOptions.basename
-  });
+function resolveOptions(options?: LsOptions | null): ResolvedLsOptions {
+  return (!options || (options && typeof options !== 'object')) ? defaultLsOptions : {
+    encoding: options?.encoding?.trim() as BufferEncoding ?? defaultLsOptions.encoding,
+    recursive: options?.recursive ?? defaultLsOptions.recursive,
+    match: options?.match ?? defaultLsOptions.match,
+    exclude: options?.exclude ?? defaultLsOptions.exclude,
+    rootDir: options?.rootDir ?? defaultLsOptions.rootDir,
+    absolute: options?.absolute ?? defaultLsOptions.absolute,
+    basename: options?.basename ?? defaultLsOptions.basename
+  } satisfies ResolvedLsOptions;
 }
 
 /**
@@ -293,16 +293,16 @@ function encodeTo(
  * @returns The array of encoded strings.
  */
 function encodeTo(
-  val: Array<string>,
+  val: string[],
   from: BufferEncoding,
   to: BufferEncoding
-): Array<string>;
+): string[];
 
 function encodeTo(
-  val: string | Array<string>,
+  val: string | string[],
   from: BufferEncoding,
   to: BufferEncoding
-): string | Array<string> {
+): string | string[] {
   const { isEncoding } = Buffer;
   if (!isEncoding(from)) throw new TypeError("Unknown 'from' encoding: " + from);
   else if (!isEncoding(to)) throw new TypeError("Unknown 'to' encoding: " + to);
@@ -314,7 +314,7 @@ function encodeTo(
     return Buffer.from(val, from).toString(to);
   }
 
-  return (<Array<string>> val).map(function (v: string): string {
+  return val.map(function (v: string): string {
     return Buffer.from(v, from).toString(to);
   });
 }
@@ -398,9 +398,10 @@ export async function ls(
   options?: LsOptions | RegExp | undefined,
   type?: LsTypes | undefined
 ): Promise<LsResult> {
-  let absdirpath: StringPath,
-      reldirpath: StringPath;
-      
+  let absdirpath: StringPath;
+  let reldirpath: StringPath;
+  const lsTypesValues = Object.fromEntries(Object.entries(lsTypes));
+
   if (!(dirpath instanceof URL) && typeof dirpath !== 'string') {
     throw new TypeError('Unknown type, expected a string or a URL object');
   }
@@ -423,11 +424,11 @@ export async function ls(
   if (options instanceof RegExp) {
     // Store the regex value of `options` to temporary variable for `match` option
     const temp: RegExp = new RegExp(options.source) || options;
-    options = <LsOptions> resolveOptions(null);  // Use the default options
-    (<LsOptions> options)!.match = temp;  // Reassign the `match` field
+    options = resolveOptions(null);  // Use the default options
+    options.match = temp;  // Reassign the `match` field
   } else if (!options || (typeof options === 'object' && !Array.isArray(options))) {
     // Resolve the options, even it is not specified
-    options = <LsOptions> resolveOptions(options);
+    options = resolveOptions(options);
   } else {
     throw new TypeError("Unknown type of 'options': "
       + (Array.isArray(options) ? 'array' : typeof options));
@@ -444,30 +445,32 @@ export async function ls(
   }
 
   // Resolve the absolute and relative of the dirpath argument
-  absdirpath = path.isAbsolute(<StringPath> dirpath)
-    ? <StringPath> dirpath
-    : path.posix.resolve(<StringPath> dirpath);
-  reldirpath = path.relative(options.rootDir! || process.cwd(), absdirpath);;
+  absdirpath = path.isAbsolute(dirpath)
+    ? dirpath
+    : path.posix.resolve(dirpath);
+  reldirpath = path.relative(options.rootDir ?? process.cwd(), absdirpath);;
 
   // Check the type argument
-  checkType(type!, [ ...Object.values(lsTypes), 0, null, undefined ]);
+  checkType(type, [ ...Object.values(lsTypes), 0, null, undefined ]);
 
   let result: LsResult = null;
   try {
     // Read the specified directory path recursively
     const entries: LsEntries = await fs.promises.readdir(absdirpath, {
+      // FIXME
       encoding: options?.encoding || 'utf8',
       recursive: options?.recursive
     });
     // Declare the copy of the entries with UTF-8 encoding to be used by `fs.stat`,
     // this way we prevent the error due to invalid path thrown by `fs.stat` itself.
-    const utf8Entries: LsEntries = encodeTo(entries, options?.encoding!, 'utf8');
+    // FIXME
+    const utf8Entries: LsEntries = encodeTo(entries, options?.encoding, 'utf8');
 
     // Filter the entries
     result = await Promise.all(
-      utf8Entries.map(async function (entry: StringPath): Promise<(StringPath | null)> {
+      utf8Entries.map(async function (entry: StringPath): Promise<StringPath | null> {
         entry = path.join(absdirpath, entry);
-        let stats: fs.Stats | null = null;
+        let stats: fs.Stats | undefined;
         let resultType: boolean = false,
             isDir:      boolean = false,
             isFile:     boolean = false;
@@ -492,38 +495,49 @@ export async function ls(
           } catch (eDir: unknown) {
             // If and only if the thrown error have a code "ENOTDIR",
             // then it treats the entry as a regular file. Otherwise, throw the error.
-            if (eDir instanceof Error && ('code' in eDir && eDir.code === 'ENOTDIR'))
-              isFile = true;  // Detected as a regular file
-            else throw eDir;
+            if (eDir instanceof Error) {
+              if ('code' in eDir && eDir.code === 'ENOTDIR') {
+                isFile = true;  // Detected as a regular file
+              } else {
+                eDir.cause = e;
+                throw eDir;
+              }
+            }
           }
         }
 
-        switch (type) {
+        // Don't worry about nullable values here, it will fallback to `LS_A`.
+        // Otherwise, any non-nullable values (not including from `lsTypes`) will throwing an error.
+        switch (type ?? lsTypes.LS_A) {
           case lsTypes.LS_D:
-          case 'LS_D':
+          case lsTypesValues[String(lsTypes.LS_D)]:
             resultType = (
               !(stats?.isFile() || isFile)
                 && (stats?.isDirectory() || isDir)
             );
             break;
           case lsTypes.LS_F:
-          case 'LS_F':
+          case lsTypesValues[String(lsTypes.LS_F)]:
             resultType = (
               (stats?.isFile() || isFile)
                 && !(stats?.isDirectory() || isDir)
             );
             break;
-          default:
+          case lsTypes.LS_A:
+          case lsTypesValues[String(lsTypes.LS_A)]:
             resultType = (
               (stats?.isFile() || isFile)
                 || (stats?.isDirectory() || isDir)
             );
+            break;
+          default:
+            throw new TypeError(`Unknown value of 'type': ${type}`);
         }
 
         return ((
           resultType && (
-            (<RegExp> options.match).test(entry)
-              && (options.exclude ? !(<RegExp> options.exclude).test(entry) : true)
+            options.match?.test(entry)  // FIXME
+              && (options.exclude ? !options.exclude.test(entry) : true)  // FIXME
           )
         )
           ? (
@@ -541,20 +555,21 @@ export async function ls(
         )
       })
     ).then(function (results: (Unpack<LsEntries> | null)[]): LsEntries {
-      return <LsEntries> results.filter(
+      return results.filter(
         function (entry: Unpack<(typeof results)>): boolean {
           return !!entry!;  // Remove any null entries
         }
-      );
+      ) as LsEntries;
     });
   } catch (err: unknown) {
     if (err instanceof Error) throw err;
   }
 
   // Encode back the entries to the specified encoding
-  if (result && options?.encoding! !== 'utf8')
-    result = encodeTo(result, 'utf8', options.encoding!);
-  return (!!result ? result.sort() : result);
+  if (result && options?.encoding !== 'utf8')
+    // FIXME
+    result = encodeTo(result, 'utf8', options.encoding);
+  return (result ? result.sort() : result);
 }
 
 /**
