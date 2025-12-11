@@ -15,15 +15,20 @@ console.log(`\n\x1b[1m${path.basename(__filename)}:\x1b[0m`);
 
 it('test `ls` function by listing this file directory', async () => {
   const results = await ls(__dirname, { absolute: true }, 0);
-  const expected = [ 'lib', 'lsfnd.spec.cjs', 'lsfnd.spec.mjs' ]
-    .map((e) => path.join(__dirname, e));
+  const expected = [
+    'lib',
+    'lsfnd.spec.cjs', 'lsfnd.spec.mjs',
+    'lsfnd-sync.spec.cjs', 'lsfnd-sync.spec.mjs',
+  ].map((e) => path.join(__dirname, e)).sort();
   deepEq(results, expected);
 }, false);
 
 it('test `lsFiles` function by listing this file directory', async () => {
   const results = await lsFiles(__dirname, { absolute: true });
-  const expected = [ 'lsfnd.spec.cjs', 'lsfnd.spec.mjs' ]
-    .map((e) => path.join(__dirname, e));
+  const expected = [
+    'lsfnd.spec.cjs', 'lsfnd.spec.mjs',
+    'lsfnd-sync.spec.cjs', 'lsfnd-sync.spec.mjs'
+  ].map((e) => path.join(__dirname, e)).sort();
   deepEq(results, expected);
 }, false);
 
@@ -51,8 +56,11 @@ it('test if the type argument accepts a string value', async () => {
 
 it("list this file directory with 'base64' encoding", async () => {
   const results = await ls(__dirname, { rootDir: __dirname, encoding: 'base64' });
-  const expected = [ 'lib', 'lsfnd.spec.cjs', 'lsfnd.spec.mjs' ]
-    .map((e) => Buffer.from(e, 'utf8').toString('base64'));
+  const expected = [
+    'lib',
+    'lsfnd.spec.cjs', 'lsfnd.spec.mjs',
+    'lsfnd-sync.spec.cjs', 'lsfnd-sync.spec.mjs'
+  ].map((e) => Buffer.from(e, 'utf8').toString('base64')).sort();
   deepEq(results, expected);
 }, false);
 
