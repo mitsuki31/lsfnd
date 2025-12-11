@@ -2,9 +2,9 @@
 
 [![Version](https://img.shields.io/npm/v/lsfnd?logo=npm&label=lsfnd)](https://npmjs.com/package/lsfnd)
 ![Min. Node](https://img.shields.io/node/v-lts/lsfnd/latest?logo=node.js&label=node)
-[![Bundle size (minified)](https://img.shields.io/bundlephobia/min/lsfnd)](https://npmjs.com/package/lsfnd)<br>
+[![Bundle size (minified)](https://img.shields.io/bundlephobia/min/lsfnd)](https://npmjs.com/package/lsfnd)<br />
 [![Test CI](https://github.com/mitsuki31/lsfnd/actions/workflows/test.yml/badge.svg)](https://github.com/mitsuki31/lsfnd/actions/workflows/test.yml)
-[![License](https://img.shields.io/github/license/mitsuki31/lsfnd?logo=github&logoColor=f9f9f9&label=License&labelColor=yellow&color=white)](https://github.com/mitsuki31/lsfnd/tree/master/LICENSE)
+[![License](https://img.shields.io/github/license/mitsuki31/lsfnd?logo=readme&logoColor=f9f9f9&label=License&labelColor=yellow&color=white)](https://github.com/mitsuki31/lsfnd/tree/master/LICENSE)
 
 **LSFND** is an abbreviation for _list (ls) files (f) and (n) directories (d)_,
 a lightweight Node.js library designed to make listing files and directories more convenient.
@@ -12,13 +12,22 @@ It offers an efficient and simple way to explore through your directory structur
 and retrieves the names of files and/or directories leveraging a configurable options
 to modify the listing behavior, such as recursive searches and regular expression filters.
 
-This library's **primary benefit** is that every implemented API runs asynchronously,
+This library's **primary benefit** is that every implemented API within main module runs asynchronously,
 guaranteeing that they will **NEVER** disrupt the execution of any other processes.
 
-> [!IMPORTANT]\
-> Currently this library only focus on CommonJS (CJS) and ECMAScript Modules (ESM).
+> [!IMPORTANT]  
 >
-> As of version 1.0.0, this library has supported TypeScript projects with various
+> ### v1.2.0
+> Added synchronous version for `ls`, `lsFiles`, and `lsDirs`.
+> Can be imported from submodule `/sync` as such below:
+> ```js
+> const { lsFiles } = require('lsfnd/sync');
+> // Or:
+> import { lsFiles } from 'lsfnd/sync';
+> ```
+>
+> ### v1.0.0
+> This library has supported TypeScript projects with various
 > module types (i.e., `node16`, `es6`, and many more). Previously, it was only supports
 > TypeScript projects with module type of `commonjs`. All type declarations in this
 > library also has been enhanced to more robust and strict, thus improving type safety.
