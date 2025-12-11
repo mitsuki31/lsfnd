@@ -5,6 +5,7 @@ module.exports = {
     files: [
       'dist/index.js',
       'dist/lsfnd.js',
+      'dist/lsfnd-sync.js',
       'dist/lsTypes.js'
     ]
   },
