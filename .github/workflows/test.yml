@@ -5,13 +5,17 @@ on:
     branches: [ "master" ]
   pull_request:
 
+concurrency:
+  group: test-${{ github.workflow }}-${{ github.ref_name || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}-latest
     strategy:
       matrix:
         os: [ Windows, Ubuntu ]
-        node-ver: [16.x, 18.x, 20.x]
+        node-ver: [ 18.x, 20.x ]
 
     steps:
     - uses: actions/checkout@v4
