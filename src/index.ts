@@ -22,3 +22,4 @@ export type {
   LsEntries,
   LsResult
 } from '../types';
+export { defaultLsOptions } from './constants';

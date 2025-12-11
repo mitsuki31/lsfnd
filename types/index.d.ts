@@ -10,7 +10,6 @@
 * @since   0.1.0
 * @license MIT
 */
-/// <reference types="node" />
 
 /**
  * A type representing the string path.
@@ -25,7 +24,7 @@ export declare type StringPath = string;
  * the listed directory.
  * @since 0.1.0
  */
-export declare type LsEntries = Array<StringPath>;
+export declare type LsEntries = StringPath[];
 
 /**
  * This type alias represents the possible return values of the `ls*` functions.
@@ -56,7 +55,7 @@ export declare type LsTypesKeys = keyof LsTypesInterface;
  * @see {@link LsTypesInterface}
  * @see {@link LsTypesKeys}
  */
-export declare type LsTypesValues = keyof typeof LsTypesInterface;
+export declare type LsTypesValues = LsTypesInterface[LsTypesKeys];
 
 /**
  * Interface defining the {@link lsTypes} enum with string literal keys
@@ -230,10 +229,9 @@ export declare interface LsOptions {
  * @see   {@link LsOptions}
  * @see   {@link DefaultLsOptions}
  */
-export declare type ResolvedLsOptions = {
-  [T in keyof LsOptions]-?: T extends 'exclude'
-    ? NonNullable<LsOptions[T]> | undefined
-    : NonNullable<LsOptions[T]>
+export declare type ResolvedLsOptions = Required<Omit<LsOptions, "exclude">> & {
+  // Keep this to have undefined, so we can use that value if don't want to exclude any files
+  exclude: LsOptions["exclude"];
 };
 
 /**
@@ -255,40 +253,3 @@ export declare interface DefaultLsOptions {
   readonly absolute: false;
   readonly basename: false;
 }
-
-// ====== APIs ===== //
-
-/**
- * {@inheritDoc !lsTypes~lsTypes}
- *
- * @see For more details, refer to {@link !lsTypes~lsTypes lsTypes} enum documentation.
- */
-export declare const lsTypes: Record<
-  LsTypesKeys,
-  LsTypesValues
-> & Record<
-  LsTypesValues,
-  LsTypesKeys
->;
-
-/** {@inheritDoc !lsfnd~ls} */
-export declare function ls(
-  dirpath: StringPath | URL,
-  options?: LsOptions | RegExp | undefined,
-  type?: LsTypes | undefined
-): Promise<LsResult>
-
-/** {@inheritDoc !lsfnd~lsFiles} */
-export declare function lsFiles(
-  dirpath: StringPath | URL,
-  options?: LsOptions | RegExp | undefined
-): Promise<LsResult>
-
-/** {@inheritDoc !lsfnd~lsDirs} */
-export declare function lsDirs(
-  dirpath: StringPath | URL,
-  options?: LsOptions | RegExp | undefined
-): Promise<LsResult>
-
-// Ensure it is treated as module
-export {};

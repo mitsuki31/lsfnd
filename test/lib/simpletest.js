@@ -38,7 +38,7 @@ class TestError extends Error {
  * @param {string} desc - A string describing the test case.
  * @param {Function} func - The function containing the test logic.
  * @param {boolean} [continueOnErr=false] - Whether to continue when error occurred.
- * @throws {module:simpletest~TestError} If there is an error occurred in test logic.
+ * @throws {TestError} If there is an error occurred in test logic.
  */
 async function it(desc, func, continueOnErr=false) {
   const { isAsyncFunction } = require('node:util').types;
