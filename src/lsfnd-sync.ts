@@ -21,6 +21,8 @@ import {
   resolveOptions,
 } from './utils';
 
+export * from './lsTypes';  // Re-export the `lsTypes` enum here
+
 /**
  * **Synchronously** lists files and directories in a specified directory path, filtering by a
  * regular expression pattern.
