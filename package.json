@@ -21,13 +21,14 @@
   "scripts": {
     "dev": "tsx scripts/build.ts",
     "build": "tsx scripts/build.ts --minify",
+    "postbuild": "tsx scripts/postbuild.ts",
     "docs": "npm run-script build:docs",
     "build:docs": "typedoc --options typedoc.config.js",
     "test": "npm run test:cjs && npm run test:mjs",
     "test:cjs": "node test/lsfnd.spec.cjs && node test/lsfnd-sync.spec.cjs",
     "test:mjs": "node test/lsfnd.spec.mjs && node test/lsfnd-sync.spec.mjs",
     "prepublishOnly": "npm run build",
-    "prepack": "npm test"
+    "prepack": "npm test && npm pkg delete devDependencies peerDependencies"
   },
   "repository": {
     "type": "git",
